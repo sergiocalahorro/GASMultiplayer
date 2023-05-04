@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "GASMultiplayerGameMode.h"
-#include "GASMultiplayerCharacter.h"
+#include "GameModes/GASMultiplayerGameMode.h"
+#include "Character/GASMultiplayerCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AGASMultiplayerGameMode::AGASMultiplayerGameMode()
