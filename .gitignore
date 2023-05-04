@@ -1,5 +1,9 @@
 # Visual Studio 2015 user specific files
 .vs/
+.vsconfig
+
+# JetBrains Rider user specific files
+.idea/
 
 # Compiled Object files
 *.slo
@@ -35,6 +39,7 @@
 *.xcodeproj
 *.xcworkspace
 *.sln
+*.sln.*
 *.suo
 *.opensdf
 *.sdf
