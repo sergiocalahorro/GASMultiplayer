@@ -1,9 +1,10 @@
 # Visual Studio 2015 user specific files
 .vs/
-.vsconfig
+*.vsconfig
 
 # JetBrains Rider user specific files
 .idea/
+.idea/*
 
 # Compiled Object files
 *.slo
