@@ -8,6 +8,7 @@
 // Unreal Engine
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
+#include "General/Structs/CharacterData.h"
 
 #include "BaseCharacter.generated.h"
 
@@ -17,11 +18,12 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 class UGameplayEffect;
+class UGameplayAbility;
 
 // Forward declarations - GASMultiplayer
 class UBaseAbilitySystemComponent;
 class UBaseAttributeSet;
-class UGameplayAbility;
+class UCharacterDataAsset;
 
 UCLASS(config=Game)
 class ABaseCharacter : public ACharacter, public IAbilitySystemInterface
@@ -40,15 +42,21 @@ public:
 #pragma region OVERRIDES
 
 protected:
+
+	/** Allow actors to initialize themselves on the C++ side after all of their components have been initialized, only called during gameplay */
+	virtual void PostInitializeComponents() override;
 	
 	/** Called when the game starts */
-	virtual void BeginPlay();
+	virtual void BeginPlay() override;
 
 	/** Called when this Pawn is possessed (only called on the server) */
 	virtual void PossessedBy(AController* NewController) override;
 
 	/** PlayerState Replication Notification (only called on the client) */
 	virtual void OnRep_PlayerState() override;
+
+	/** Returns properties that are replicated for the lifetime of the actor channel */
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 #pragma endregion OVERRIDES
 
@@ -114,11 +122,15 @@ public:
 	/** Returns the ability system component to use for this actor */
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-protected:
-
-	/** Initialize attributes' values */
+	/** Setter of CharacterData */
 	UFUNCTION()
-	void InitializeAttributes();
+	void SetCharacterData(const FCharacterData& NewCharacterData);
+
+	/** Getter of CharacterData */
+	UFUNCTION()
+	FCharacterData GetCharacterData() const { return CharacterData; }
+
+protected:
 
 	/** Give abilities */
 	UFUNCTION()
@@ -128,6 +140,14 @@ protected:
 	UFUNCTION()
 	void ApplyStartupEffects();
 
+	/** Initialize values from CharacterData */
+	UFUNCTION()
+	virtual void InitFromCharacterData(const FCharacterData& NewCharacterData, bool bFromReplication = false);
+
+	/** Replicate CharacterData */
+	UFUNCTION()
+	void OnRep_CharacterData();
+
 private:
 
 	/** Apply given gameplay effect to self */
@@ -136,17 +156,9 @@ private:
 
 protected:
 
-	/** Default attributes */
+	/** Character's data asset */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS")
-	TSubclassOf<UGameplayEffect> DefaultAttributes;
-
-	/** Default abilities */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS")
-	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
-
-	/** Default abilities */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS")
-	TArray<TSubclassOf<UGameplayEffect>> DefaultEffects;
+	TObjectPtr<UCharacterDataAsset> CharacterDataAsset;
 
 private:
 
@@ -155,8 +167,12 @@ private:
 	TObjectPtr<UBaseAbilitySystemComponent> AbilitySystemComponent;
 
 	/** Attributes */
-	UPROPERTY(VisibleDefaultsOnly, Transient)
+	UPROPERTY(Transient)
 	TObjectPtr<UBaseAttributeSet> AttributeSet;
+	
+	/** Character's data */
+	UPROPERTY(ReplicatedUsing = OnRep_CharacterData)
+	FCharacterData CharacterData;
 
 #pragma endregion GAS
 	

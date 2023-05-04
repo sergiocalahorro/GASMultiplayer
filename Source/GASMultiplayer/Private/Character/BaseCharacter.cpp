@@ -13,10 +13,12 @@
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 // GASMultiplayer
 #include "GAS/Attributes/BaseAttributeSet.h"
 #include "GAS/AbilitySystem/BaseAbilitySystemComponent.h"
+#include "General/DataAssets/CharacterDataAsset.h"
 
 #pragma region INITIALIZATION
 
@@ -62,6 +64,17 @@ ABaseCharacter::ABaseCharacter()
 
 #pragma region OVERRIDES
 
+/** Allow actors to initialize themselves on the C++ side after all of their components have been initialized, only called during gameplay */
+void ABaseCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (IsValid(CharacterDataAsset))
+	{
+		SetCharacterData(CharacterDataAsset->CharacterData);
+	}
+}
+
 /** Called when the game starts */
 void ABaseCharacter::BeginPlay()
 {
@@ -83,8 +96,6 @@ void ABaseCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-
-	InitializeAttributes();
 	GiveAbilities();
 	ApplyStartupEffects();
 }
@@ -95,8 +106,14 @@ void ABaseCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+}
 
-	InitializeAttributes();
+/** Returns properties that are replicated for the lifetime of the actor channel */
+void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABaseCharacter, CharacterData);
 }
 
 #pragma endregion OVERRIDES
@@ -173,23 +190,12 @@ UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-/** Initialize attributes' values */
-void ABaseCharacter::InitializeAttributes()
-{
-	if (GetLocalRole() == ROLE_Authority && DefaultAttributes && AttributeSet)
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-
-		ApplyGameplayEffectToSelf(DefaultAttributes, EffectContext);
-	}
-}
 /** Give abilities */
 void ABaseCharacter::GiveAbilities()
 {
 	if (HasAuthority() && AbilitySystemComponent)
 	{
-		for (const TSubclassOf<UGameplayAbility> DefaultAbility : DefaultAbilities)
+		for (const TSubclassOf<UGameplayAbility> DefaultAbility : CharacterData.Abilities)
 		{
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(DefaultAbility));
 		}
@@ -204,7 +210,7 @@ void ABaseCharacter::ApplyStartupEffects()
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
 		
-		for (const TSubclassOf<UGameplayEffect> DefaultEffect : DefaultEffects)
+		for (const TSubclassOf<UGameplayEffect> DefaultEffect : CharacterData.Effects)
 		{
 			ApplyGameplayEffectToSelf(DefaultEffect, EffectContext);
 		}
@@ -226,6 +232,25 @@ bool ABaseCharacter::ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect
 	}
 	const FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return ActiveEffectHandle.WasSuccessfullyApplied();
+}
+
+/** Setter of CharacterData */
+void ABaseCharacter::SetCharacterData(const FCharacterData& NewCharacterData)
+{
+	CharacterData = NewCharacterData;
+	InitFromCharacterData(CharacterData);
+}
+
+/** Initialize values from CharacterData */
+void ABaseCharacter::InitFromCharacterData(const FCharacterData& NewCharacterData, bool bFromReplication)
+{
+	
+}
+
+/** Replicate CharacterData */
+void ABaseCharacter::OnRep_CharacterData()
+{
+	InitFromCharacterData(CharacterData, true);
 }
 
 #pragma endregion GAS

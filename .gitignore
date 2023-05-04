@@ -4,7 +4,6 @@
 
 # JetBrains Rider user specific files
 .idea/
-.idea/*
 
 # Compiled Object files
 *.slo
@@ -78,3 +77,5 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+Platforms/*
