@@ -18,12 +18,14 @@
 // GASMultiplayer
 #include "GAS/Attributes/BaseAttributeSet.h"
 #include "GAS/AbilitySystem/BaseAbilitySystemComponent.h"
+#include "General/Components/CustomCharacterMovementComponent.h"
 #include "General/DataAssets/CharacterDataAsset.h"
 
 #pragma region INITIALIZATION
 
-/** Sets default values for this Actor's properties */
-ABaseCharacter::ABaseCharacter()
+/** Constructor for AActor that takes an ObjectInitializer for backward compatibility */
+ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
+	Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Setup hierarchy
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -45,6 +47,7 @@ ABaseCharacter::ABaseCharacter()
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;

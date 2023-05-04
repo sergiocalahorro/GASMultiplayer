@@ -34,8 +34,8 @@ class ABaseCharacter : public ACharacter, public IAbilitySystemInterface
 	
 public:
 
-	/** Sets default values for this Actor's properties */
-	ABaseCharacter();
+	/** Constructor for AActor that takes an ObjectInitializer for backward compatibility */
+	ABaseCharacter(const FObjectInitializer& ObjectInitializer);
 
 #pragma endregion INITIALIZATION
 

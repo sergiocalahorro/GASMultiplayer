@@ -48,6 +48,18 @@ protected:
 	UFUNCTION()
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
 
+	/** Replicate Stamina */
+	UFUNCTION()
+	virtual void OnRep_Stamina(const FGameplayAttributeData& OldStamina);
+
+	/** Replicate MaxStamina */
+	UFUNCTION()
+	virtual void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina);
+
+	/** Replicate MaxMovementSpeed */
+	UFUNCTION()
+	void OnRep_MaxMovementSpeed(const FGameplayAttributeData& OldMaxMovementSpeed);
+
 public:
 
 	/** Health Attribute */
@@ -59,6 +71,21 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "AA|Health", ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxHealth);
+
+	/** Stamina Attribute */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Stamina", ReplicatedUsing = OnRep_Stamina)
+	FGameplayAttributeData Stamina;
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Stamina);
+
+	/** MaxStamina Attribute */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Stamina", ReplicatedUsing = OnRep_MaxStamina)
+	FGameplayAttributeData MaxStamina;
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxStamina);
+
+	/** MaxMovementSpeed Attribute */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|MovementSpeed", ReplicatedUsing = OnRep_MaxMovementSpeed)
+	FGameplayAttributeData MaxMovementSpeed;
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxMovementSpeed);
 
 #pragma endregion CORE
 
