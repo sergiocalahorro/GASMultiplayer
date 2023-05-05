@@ -14,7 +14,8 @@ public class GASMultiplayer : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"InputCore", 
-			"EnhancedInput" 
+			"EnhancedInput",
+			"PhysicsCore"
 		});
 		
 		PublicIncludePaths.Add("GASMultiplayer/");

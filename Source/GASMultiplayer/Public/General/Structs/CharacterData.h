@@ -11,6 +11,9 @@
 class UGameplayAbility;
 class UGameplayEffect;
 
+// Forward declarations - GASMultiplayer
+class UCharacterAnimationDataAsset;
+
 USTRUCT(BlueprintType)
 struct FCharacterData
 {
@@ -23,4 +26,8 @@ struct FCharacterData
 	/** Character's abilities */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AA|GAS")
 	TArray<TSubclassOf<UGameplayAbility>> Abilities;
+
+	/** Animation data asset */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AA|Animation")
+	TObjectPtr<UCharacterAnimationDataAsset> CharacterAnimationDataAsset;
 };

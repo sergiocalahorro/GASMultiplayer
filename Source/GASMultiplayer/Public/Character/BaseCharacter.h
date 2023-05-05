@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
 #include "General/Structs/CharacterData.h"
+#include "General/Enums/Foot.h"
 
 #include "BaseCharacter.generated.h"
 
@@ -24,6 +25,7 @@ class UGameplayAbility;
 class UBaseAbilitySystemComponent;
 class UBaseAttributeSet;
 class UCharacterDataAsset;
+class UFootstepsComponent;
 
 UCLASS(config=Game)
 class ABaseCharacter : public ACharacter, public IAbilitySystemInterface
@@ -70,15 +72,22 @@ public:
 	/** Getter of FollowCamera */
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	/** Handle footstep */
+	void HandleFootstep(EFoot Foot) const;
+
 private:
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AA|Camera", meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
+	TObjectPtr<USpringArmComponent> CameraBoom;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AA|Camera", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
+	TObjectPtr<UCameraComponent> FollowCamera;
+
+	/** Footsteps component */
+	UPROPERTY(VisibleDefaultsOnly, Category = "AA|Components")
+	TObjectPtr<UFootstepsComponent> FootstepsComponent;
 
 #pragma endregion COMPONENTS
 

@@ -13,15 +13,7 @@ class GASMULTIPLAYER_API UCustomCharacterMovementComponent : public UCharacterMo
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
+	
+	/** Sets default values for this component's properties */
 	UCustomCharacterMovementComponent();
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
 };

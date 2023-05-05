@@ -19,6 +19,7 @@
 #include "GAS/Attributes/BaseAttributeSet.h"
 #include "GAS/AbilitySystem/BaseAbilitySystemComponent.h"
 #include "General/Components/CustomCharacterMovementComponent.h"
+#include "General/Components/FootstepsComponent.h"
 #include "General/DataAssets/CharacterDataAsset.h"
 
 #pragma region INITIALIZATION
@@ -36,6 +37,8 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	FootstepsComponent = CreateDefaultSubobject<UFootstepsComponent>(TEXT("FootstepsComponent"));
 	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -120,6 +123,16 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 }
 
 #pragma endregion OVERRIDES
+
+#pragma region COMPONENTS
+
+/** Handle footstep */
+void ABaseCharacter::HandleFootstep(EFoot Foot) const
+{
+	FootstepsComponent->HandleFootstep(Foot);
+}
+
+#pragma endregion COMPONENTS
 
 #pragma region INPUT
 
