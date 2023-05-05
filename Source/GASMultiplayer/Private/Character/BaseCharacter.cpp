@@ -74,7 +74,7 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
 void ABaseCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
+	
 	if (IsValid(CharacterDataAsset))
 	{
 		SetCharacterData(CharacterDataAsset->CharacterData);
@@ -85,15 +85,6 @@ void ABaseCharacter::PostInitializeComponents()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Add InputMappingContext
-	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
 
 /** Called when this Pawn is possessed (only called on the server) */
@@ -122,17 +113,35 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABaseCharacter, CharacterData);
 }
 
-#pragma endregion OVERRIDES
-
-#pragma region COMPONENTS
-
-/** Handle footstep */
-void ABaseCharacter::HandleFootstep(EFoot Foot) const
+/** Tell client that the Pawn is begin restarted */
+void ABaseCharacter::PawnClientRestart()
 {
-	FootstepsComponent->HandleFootstep(Foot);
+	Super::PawnClientRestart();
+
+	if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->ClearAllMappings();
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
 }
 
-#pragma endregion COMPONENTS
+/** Called upon landing when falling, to perform actions based on the Hit result */
+void ABaseCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+	
+	AbilitySystemComponent->RemoveActiveEffectsWithTags(InAirTags);
+}
+
+#pragma endregion OVERRIDES
 
 #pragma region INPUT
 
@@ -145,14 +154,23 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Move);
+		if (MoveAction)
+		{
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Move);
+		}
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Look);
+		if (LookAction)
+		{
+			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Look);
+		}
 		
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		if (JumpAction)
+		{
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABaseCharacter::StartJump);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopJump);
+		}
 	}
 }
 
@@ -194,6 +212,21 @@ void ABaseCharacter::Look(const FInputActionValue& Value)
 	// Add yaw and pitch input to controller
 	AddControllerYawInput(LookAxisVector.X);
 	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+/** Called when jump is started */
+void ABaseCharacter::StartJump(const FInputActionValue& Value)
+{
+	FGameplayEventData Payload;
+	Payload.Instigator = this;
+	Payload.EventTag = JumpEventTag;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, JumpEventTag, Payload);
+}
+
+/** Called when jump is stopped */
+void ABaseCharacter::StopJump(const FInputActionValue& Value)
+{
+	
 }
 
 #pragma endregion INPUT

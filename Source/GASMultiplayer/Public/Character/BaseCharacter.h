@@ -8,6 +8,7 @@
 // Unreal Engine
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "General/Structs/CharacterData.h"
 #include "General/Enums/Foot.h"
 
@@ -43,6 +44,11 @@ public:
 
 #pragma region OVERRIDES
 
+public:
+
+	/** Called upon landing when falling, to perform actions based on the Hit result */
+	virtual void Landed(const FHitResult& Hit) override;
+
 protected:
 
 	/** Allow actors to initialize themselves on the C++ side after all of their components have been initialized, only called during gameplay */
@@ -59,6 +65,9 @@ protected:
 
 	/** Returns properties that are replicated for the lifetime of the actor channel */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	/** Tell client that the Pawn is begin restarted */
+	virtual void PawnClientRestart() override;
 	
 #pragma endregion OVERRIDES
 
@@ -71,9 +80,6 @@ public:
 	
 	/** Getter of FollowCamera */
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-	/** Handle footstep */
-	void HandleFootstep(EFoot Foot) const;
 
 private:
 
@@ -104,6 +110,12 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	/** Called when jump is started */
+	void StartJump(const FInputActionValue& Value);
+
+	/** Called when jump is stopped */
+	void StopJump(const FInputActionValue& Value);
+
 private:
 	
 	/** MappingContext */
@@ -125,6 +137,8 @@ private:
 #pragma endregion INPUT
 
 #pragma region GAS
+
+#pragma region GAS_CORE
 
 public:
 
@@ -166,7 +180,7 @@ private:
 protected:
 
 	/** Character's data asset */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS")
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Core")
 	TObjectPtr<UCharacterDataAsset> CharacterDataAsset;
 
 private:
@@ -182,6 +196,22 @@ private:
 	/** Character's data */
 	UPROPERTY(ReplicatedUsing = OnRep_CharacterData)
 	FCharacterData CharacterData;
+
+#pragma endregion GAS_CORE
+
+#pragma region GAS_TAGS
+
+protected:
+
+	/** Gameplay event tag: Jump */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTag JumpEventTag;
+
+	/** Tags applied while in air */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTagContainer InAirTags;
+
+#pragma endregion GAS_TAGS
 
 #pragma endregion GAS
 	

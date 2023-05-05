@@ -40,13 +40,17 @@ public:
 
 	/** Handle footstep with given foot */
 	UFUNCTION()
-	void HandleFootstep(EFoot Foot);
+	void HandleFootstep(EFoot Foot) const;
 
 private:
 
-	/** Socket name per foot */
+	/** Socket name for left foot */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Footstep")
-	TMap<EFoot, FName> FeetSocketNames;
+	FName LeftFootSocketName = FName("foot_l");
+
+	/** Socket name for right foot */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Footstep")
+	FName RightFootSocketName = FName("foot_r");
 
 	/** Distance to perform footstep's trace */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Footstep", meta = (ClampMin = 0.f, UIMin = 0.f))

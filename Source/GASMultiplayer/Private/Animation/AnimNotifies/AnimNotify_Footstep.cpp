@@ -2,7 +2,8 @@
 
 #include "Animation/AnimNotifies/AnimNotify_Footstep.h"
 
-#include "Character/BaseCharacter.h"
+// GASMultiplayer
+#include "General/Components/FootstepsComponent.h"
 
 #pragma region INITIALIZATION
 
@@ -24,9 +25,12 @@ void UAnimNotify_Footstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 	Super::Notify(MeshComp, Animation);
 	check(MeshComp);
 
-	if (const ABaseCharacter* Character = Cast<ABaseCharacter>(MeshComp->GetOwner()))
+	if (const AActor* Owner = MeshComp->GetOwner())
 	{
-		Character->HandleFootstep(Foot);
+		if (const UFootstepsComponent* FootstepsComponent = Cast<UFootstepsComponent>(Owner->FindComponentByClass(UFootstepsComponent::StaticClass())))
+		{
+			FootstepsComponent->HandleFootstep(Foot);
+		}
 	}
 }
 
