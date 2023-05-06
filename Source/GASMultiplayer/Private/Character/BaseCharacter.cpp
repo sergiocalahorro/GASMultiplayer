@@ -74,10 +74,17 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
 void ABaseCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	
+
+	// Set default character data: startup abilities and effects, animation data...
 	if (IsValid(CharacterDataAsset))
 	{
 		SetCharacterData(CharacterDataAsset->CharacterData);
+	}
+
+	// Bind MaxMovementSpeed attribute value change
+	if (AbilitySystemComponent && AttributeSet)
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &ABaseCharacter::OnMaxMovementSpeedChanged);
 	}
 }
 
@@ -133,12 +140,41 @@ void ABaseCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	if (!AbilitySystemComponent)
+	if (AbilitySystemComponent)
 	{
-		return;
+		AbilitySystemComponent->RemoveActiveEffectsWithTags(InAirTags);
 	}
-	
-	AbilitySystemComponent->RemoveActiveEffectsWithTags(InAirTags);
+}
+
+/** Request the character to start crouching. The request is processed on the next update of the CharacterMovementComponent */
+void ABaseCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	Super::OnStartCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+
+	if (AbilitySystemComponent && CrouchStateEffect.Get())
+	{
+		const FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		const FGameplayEffectSpecHandle EffectSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(CrouchStateEffect, 1.f, EffectContext);
+		if (EffectSpecHandle.IsValid())
+		{
+			const FActiveGameplayEffectHandle CrouchActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+			if (!CrouchActiveEffectHandle.WasSuccessfullyApplied())
+			{
+				UE_LOG(LogTemp, Error, TEXT("ABaseCharacter::OnStartCrouch - %s | Failed to apply crouch effect %s"), *GetName(), *GetNameSafe(CrouchStateEffect));
+			}
+		}
+	}
+}
+
+/** Request the character to stop crouching. The request is processed on the next update of the CharacterMovementComponent */
+void ABaseCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	if (AbilitySystemComponent && CrouchStateEffect.Get())
+	{
+		AbilitySystemComponent->RemoveActiveGameplayEffectBySourceEffect(CrouchStateEffect, AbilitySystemComponent);
+	}
+
+	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
 }
 
 #pragma endregion OVERRIDES
@@ -170,6 +206,20 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		{
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABaseCharacter::StartJump);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopJump);
+		}
+
+		// Crouching
+		if (CrouchAction)
+		{
+			EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ABaseCharacter::StartCrouch);
+			EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopCrouch);
+		}
+
+		// Sprinting
+		if (SprintAction)
+		{
+			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ABaseCharacter::StartSprint);
+			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopSprint);
 		}
 	}
 }
@@ -229,9 +279,47 @@ void ABaseCharacter::StopJump(const FInputActionValue& Value)
 	
 }
 
+/** Called when crouch is started */
+void ABaseCharacter::StartCrouch(const FInputActionValue& Value)
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->TryActivateAbilitiesByTag(CrouchTags, true);
+	}
+}
+
+/** Called when crouch is stopped */
+void ABaseCharacter::StopCrouch(const FInputActionValue& Value)
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->CancelAbilities(&CrouchTags);
+	}
+}
+
+/** Called when sprint is started */
+void ABaseCharacter::StartSprint(const FInputActionValue& Value)
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->TryActivateAbilitiesByTag(SprintTags, true);
+	}
+}
+
+/** Called when sprint is stopped */
+void ABaseCharacter::StopSprint(const FInputActionValue& Value)
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->CancelAbilities(&SprintTags);
+	}
+}
+
 #pragma endregion INPUT
 
 #pragma region GAS
+
+#pragma region GAS_CORE
 
 /** Returns the ability system component to use for this actor */
 UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
@@ -269,18 +357,17 @@ void ABaseCharacter::ApplyStartupEffects()
 /** Apply given gameplay effect to self */
 bool ABaseCharacter::ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect> Effect, const FGameplayEffectContextHandle& EffectContext) const
 {
-	if (!Effect.Get())
+	if (Effect.Get())
 	{
-		return false;
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 1, EffectContext);
+		if (SpecHandle.IsValid())
+		{
+			const FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			return ActiveEffectHandle.WasSuccessfullyApplied();
+		}
 	}
 
-	const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 1, EffectContext);
-	if (!SpecHandle.IsValid())
-	{
-		return false;
-	}
-	const FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-	return ActiveEffectHandle.WasSuccessfullyApplied();
+	return false;
 }
 
 /** Setter of CharacterData */
@@ -301,5 +388,13 @@ void ABaseCharacter::OnRep_CharacterData()
 {
 	InitFromCharacterData(CharacterData, true);
 }
+
+/** Function bound to the delegate that is called whenever the MaxMovementSpeed attribute is changed */
+void ABaseCharacter::OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+}
+
+#pragma endregion GAS_CORE
 
 #pragma endregion GAS

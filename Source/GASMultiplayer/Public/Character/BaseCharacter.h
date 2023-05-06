@@ -2,15 +2,16 @@
 
 #pragma once
 
+// Unreal Engine
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-
-// Unreal Engine
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
+#include "GameplayEffectTypes.h"
+
+// GASMultiplayer
 #include "General/Structs/CharacterData.h"
-#include "General/Enums/Foot.h"
 
 #include "BaseCharacter.generated.h"
 
@@ -48,6 +49,12 @@ public:
 
 	/** Called upon landing when falling, to perform actions based on the Hit result */
 	virtual void Landed(const FHitResult& Hit) override;
+
+	/** Request the character to start crouching. The request is processed on the next update of the CharacterMovementComponent */
+	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+
+	/** Request the character to stop crouching. The request is processed on the next update of the CharacterMovementComponent */
+	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 
 protected:
 
@@ -116,15 +123,23 @@ protected:
 	/** Called when jump is stopped */
 	void StopJump(const FInputActionValue& Value);
 
+	/** Called when crouch is started */
+	void StartCrouch(const FInputActionValue& Value);
+
+	/** Called when crouch is stopped */
+	void StopCrouch(const FInputActionValue& Value);
+
+	/** Called when sprint is started */
+	void StartSprint(const FInputActionValue& Value);
+
+	/** Called when sprint is stopped */
+	void StopSprint(const FInputActionValue& Value);
+
 private:
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
@@ -133,6 +148,18 @@ private:
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LookAction;
+
+	/** Jump Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> JumpAction;
+
+	/** Crouch Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CrouchAction;
+
+	/** Sprint Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SprintAction;
 
 #pragma endregion INPUT
 
@@ -177,6 +204,9 @@ private:
 	UFUNCTION()
 	bool ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect> Effect, const FGameplayEffectContextHandle& EffectContext) const;
 
+	/** Function bound to the delegate that is called whenever the MaxMovementSpeed attribute is changed */
+	void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data);
+	
 protected:
 
 	/** Character's data asset */
@@ -199,6 +229,16 @@ private:
 
 #pragma endregion GAS_CORE
 
+#pragma region GAS_EFFECTS
+
+protected:
+
+	/** Crouch state's gameplay effect */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Effects")
+	TSubclassOf<UGameplayEffect> CrouchStateEffect;
+
+#pragma endregion GAS_EFFECTS
+
 #pragma region GAS_TAGS
 
 protected:
@@ -210,8 +250,25 @@ protected:
 	/** Tags applied while in air */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
 	FGameplayTagContainer InAirTags;
+	
+	/** Tags applied while crouching */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTagContainer CrouchTags;
+
+	/** Tags applied while sprinting */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTagContainer SprintTags;
 
 #pragma endregion GAS_TAGS
+
+#pragma region GAS_DELEGATES
+
+protected:
+
+	/** Delegate called every time MaxMovementSpeed attribute is changed */
+	FDelegateHandle MaxMovementSpeedChangedDelegateHandle;
+
+#pragma region GAS_DELEGATES
 
 #pragma endregion GAS
 	

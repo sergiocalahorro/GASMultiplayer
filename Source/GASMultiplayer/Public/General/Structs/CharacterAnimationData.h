@@ -22,4 +22,12 @@ struct FCharacterAnimationData
 	/** Idle Animation asset */
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimSequenceBase> IdleAnimationAsset;
+	
+	/** Crouch locomotion BlendSpace's reference */
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UBlendSpace> CrouchLocomotionBlendSpace;
+
+	/** Crouch Idle Animation asset */
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimSequenceBase> CrouchIdleAnimationAsset;
 };

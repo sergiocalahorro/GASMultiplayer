@@ -27,6 +27,14 @@ protected:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
 	UAnimSequenceBase* GetIdleAnimationAsset() const;
 
+	/** Get Crouch Locomotion BlendSpace's reference */
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
+	UBlendSpace* GetCrouchLocomotionBlendSpace() const;
+
+	/** Get Crouch Idle Animation sequence */
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
+	UAnimSequenceBase* GetCrouchIdleAnimationAsset() const;
+
 protected:
 
 	/** Default animation data asset, used for preventing the Character from appearing on T-Pose until it's initialized */

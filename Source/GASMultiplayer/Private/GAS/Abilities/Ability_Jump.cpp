@@ -33,8 +33,6 @@ bool UAbility_Jump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 /** Actually activate ability, do not call this directly */
 void UAbility_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
@@ -42,22 +40,10 @@ void UAbility_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			return;
 		}
 
+		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 		ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get());
 		Character->Jump();
-		
-		if (UAbilitySystemComponent* AbilitySystemComponent = ActorInfo->AbilitySystemComponent.Get())
-		{
-			const FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-			const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(JumpEffect, 1.f, EffectContext);
-			if (SpecHandle.IsValid())
-			{
-				const FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-				if (!ActiveEffectHandle.WasSuccessfullyApplied())
-				{
-					UE_LOG(LogTemp, Error, TEXT("UAbility_Jump::ActivateAbility - %s | Failed to apply jump effect"), *GetNameSafe(Character));
-				}
-			}
-		}
 	}
 }
 
