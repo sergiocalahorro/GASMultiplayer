@@ -2,8 +2,32 @@
 
 #include "General/Components/CustomCharacterMovementComponent.h"
 
-/** Sets default values for this component's properties */
-UCustomCharacterMovementComponent::UCustomCharacterMovementComponent()
+// Unreal Engine
+#include "AbilitySystemComponent.h"
+
+// GASMultiplayer
+#include "General/Globals/DebugSystem.h"
+
+#pragma region TRAVERSAL
+
+/** Try traversal ability */
+bool UCustomCharacterMovementComponent::TryTraversal(UAbilitySystemComponent* AbilitySystemComponent)
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	for (TSubclassOf<UGameplayAbility> AbilityClass : TraversalAbilitiesOrdered)
+	{
+		if (AbilitySystemComponent->TryActivateAbilityByClass(AbilityClass, true))
+		{
+			FGameplayAbilitySpec* AbilitySpec;
+			
+			AbilitySpec = AbilitySystemComponent->FindAbilitySpecFromClass(AbilityClass);
+			if (AbilitySpec && AbilitySpec->IsActive())
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
+
+#pragma endregion TRAVERSAL

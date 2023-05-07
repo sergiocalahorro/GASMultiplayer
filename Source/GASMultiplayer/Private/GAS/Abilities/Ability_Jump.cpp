@@ -42,8 +42,10 @@ void UAbility_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-		ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get());
-		Character->Jump();
+		if (ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
+		{
+			Character->Jump();
+		}
 	}
 }
 

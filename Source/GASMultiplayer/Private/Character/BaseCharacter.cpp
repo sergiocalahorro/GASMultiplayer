@@ -20,6 +20,7 @@
 #include "GAS/AbilitySystem/BaseAbilitySystemComponent.h"
 #include "General/Components/CustomCharacterMovementComponent.h"
 #include "General/Components/FootstepsComponent.h"
+#include "General/Components/CustomMotionWarpingComponent.h"
 #include "General/DataAssets/CharacterDataAsset.h"
 
 #pragma region INITIALIZATION
@@ -37,8 +38,6 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
-
-	FootstepsComponent = CreateDefaultSubobject<UFootstepsComponent>(TEXT("FootstepsComponent"));
 	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -57,6 +56,11 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+
+	
+	FootstepsComponent = CreateDefaultSubobject<UFootstepsComponent>(TEXT("FootstepsComponent"));
+	CustomMotionWarpingComponent = CreateDefaultSubobject<UCustomMotionWarpingComponent>(TEXT("CustomMotionWarpingComponent"));
+	CustomCharacterMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
 
 	// GAS setup
 	AbilitySystemComponent = CreateDefaultSubobject<UBaseAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
@@ -204,7 +208,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		// Jumping
 		if (JumpAction)
 		{
-			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABaseCharacter::StartJump);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABaseCharacter::StartJump);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopJump);
 		}
 
@@ -267,10 +271,7 @@ void ABaseCharacter::Look(const FInputActionValue& Value)
 /** Called when jump is started */
 void ABaseCharacter::StartJump(const FInputActionValue& Value)
 {
-	FGameplayEventData Payload;
-	Payload.Instigator = this;
-	Payload.EventTag = JumpEventTag;
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, JumpEventTag, Payload);
+	CustomCharacterMovementComponent->TryTraversal(AbilitySystemComponent);
 }
 
 /** Called when jump is stopped */

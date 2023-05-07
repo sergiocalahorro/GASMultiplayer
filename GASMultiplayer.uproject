@@ -1,13 +1,16 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.1",
+	"EngineAssociation": "{9E9C93A1-450F-5D61-FCF8-868310066EC6}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
 			"Name": "GASMultiplayer",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"MotionWarping"
+			]
 		}
 	],
 	"Plugins": [
@@ -20,6 +23,10 @@
 		},
 		{
 			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "MotionWarping",
 			"Enabled": true
 		}
 	]

@@ -28,6 +28,8 @@ class UBaseAbilitySystemComponent;
 class UBaseAttributeSet;
 class UCharacterDataAsset;
 class UFootstepsComponent;
+class UCustomMotionWarpingComponent;
+class UCustomCharacterMovementComponent;
 
 UCLASS(config=Game)
 class ABaseCharacter : public ACharacter, public IAbilitySystemInterface
@@ -88,6 +90,9 @@ public:
 	/** Getter of FollowCamera */
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	/** Getter of CustomMotionWarpingComponent */
+	FORCEINLINE UCustomMotionWarpingComponent* GetCustomMotionWarpingComponent() const { return CustomMotionWarpingComponent; }
+
 private:
 
 	/** Camera boom positioning the camera behind the character */
@@ -101,6 +106,13 @@ private:
 	/** Footsteps component */
 	UPROPERTY(VisibleDefaultsOnly, Category = "AA|Components")
 	TObjectPtr<UFootstepsComponent> FootstepsComponent;
+
+	/** Custom Motion Warping component */
+	UPROPERTY(VisibleDefaultsOnly, Category = "AA|Components")
+	TObjectPtr<UCustomMotionWarpingComponent> CustomMotionWarpingComponent;
+
+	/** Custom Character Movement component */
+	TObjectPtr<UCustomCharacterMovementComponent> CustomCharacterMovementComponent;
 
 #pragma endregion COMPONENTS
 

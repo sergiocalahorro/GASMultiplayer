@@ -28,7 +28,7 @@ void UFootstepsComponent::HandleFootstep(EFoot Foot) const
 {
 	if (const ACharacter* Character = Cast<ACharacter>(GetOwner()))
 	{
-		const int32 DebugShowFootsteps = CVarShowDebug.GetValueOnAnyThread();
+		const int32 DebugShowFootsteps = CVarShowFootstepDebug.GetValueOnAnyThread();
 		
 		FCollisionQueryParams QueryParams;
 		QueryParams.bReturnPhysicalMaterial = true;

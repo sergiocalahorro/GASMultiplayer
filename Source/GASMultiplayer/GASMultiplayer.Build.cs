@@ -15,7 +15,8 @@ public class GASMultiplayer : ModuleRules
 			"Engine",
 			"InputCore", 
 			"EnhancedInput",
-			"PhysicsCore"
+			"PhysicsCore",
+			"MotionWarping"
 		});
 		
 		PublicIncludePaths.Add("GASMultiplayer/");
