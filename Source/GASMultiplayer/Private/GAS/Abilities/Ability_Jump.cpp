@@ -5,6 +5,8 @@
 // Unreal Engine
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 #pragma region INITIALIZATION
 
@@ -22,9 +24,13 @@ UAbility_Jump::UAbility_Jump()
 /** Returns true if this ability can be activated right now. Has no side effects */
 bool UAbility_Jump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	if (const ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get(), ECastCheckedType::NullAllowed))
+	if (ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get(), ECastCheckedType::NullAllowed))
 	{
-		return Character->CanJump();
+		const bool bMovementAllowJump = Character->GetCharacterMovement()->IsJumpAllowed();
+		if (const UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Character))
+		{
+			return Character->CanJump() || (bMovementAllowJump && AbilitySystemComponent->HasMatchingGameplayTag(WallRunStateTag));
+		}
 	}
 
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
@@ -44,7 +50,34 @@ void UAbility_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 		if (ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
 		{
-			Character->Jump();
+			if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Character))
+			{
+				if (AbilitySystemComponent->HasMatchingGameplayTag(WallRunStateTag))
+				{
+					const FGameplayTagContainer WallRunTags(WallRunStateTag);
+					AbilitySystemComponent->CancelAbilities(&WallRunTags);
+
+					FVector InputDirection = Character->GetCharacterMovement()->GetCurrentAcceleration().GetSafeNormal();
+
+					// If there's no input direction, then use a perpendicular direction for the jump
+					if (InputDirection.IsZero()) 
+					{
+						InputDirection = Character->GetActorRightVector();
+						if (!AbilitySystemComponent->HasMatchingGameplayTag(WallRunStateLeftTag))
+						{
+							InputDirection *= -1.f;
+						}
+					}
+
+					// Jump in the direction of the input
+					const FVector JumpOffDirection = InputDirection + FVector::UpVector;
+					Character->LaunchCharacter(JumpOffDirection * OffWallJumpStrength, false, true);
+				}
+				else
+				{
+					Character->Jump();
+				}
+			}
 		}
 	}
 }

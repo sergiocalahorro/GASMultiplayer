@@ -9,7 +9,6 @@
 
 // GASMultiplayer
 #include "General/PhysicalMaterials/BasePhysicalMaterial.h"
-#include "General/Globals/DebugSystem.h"
 
 /** Sets default values for this component's properties */
 UFootstepsComponent::UFootstepsComponent()
@@ -28,7 +27,9 @@ void UFootstepsComponent::HandleFootstep(EFoot Foot) const
 {
 	if (const ACharacter* Character = Cast<ACharacter>(GetOwner()))
 	{
-		const int32 DebugShowFootsteps = CVarShowFootstepDebug.GetValueOnAnyThread();
+		// Debug
+		static const IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("ShowCustomDebug"));
+		const bool bShowCustomDebug = CVar->GetInt() > 0;
 		
 		FCollisionQueryParams QueryParams;
 		QueryParams.bReturnPhysicalMaterial = true;
@@ -42,7 +43,7 @@ void UFootstepsComponent::HandleFootstep(EFoot Foot) const
 															   ECC_WorldStatic, QueryParams);
 
 		// Debug
-		if (DebugShowFootsteps > 0)
+		if (bShowCustomDebug)
 		{
 			DrawDebugLine(GetWorld(), TraceStartLocation, TraceEndLocation, bHit ? FColor::Green : FColor::Red, false, 2.f, 0, 3.f);
 		}
@@ -54,14 +55,14 @@ void UFootstepsComponent::HandleFootstep(EFoot Foot) const
 				UGameplayStatics::PlaySoundAtLocation(this, PhysMaterial->FootstepSound, HitResult.Location, 1.f);
 
 				// Debug
-				if (DebugShowFootsteps > 0)
+				if (bShowCustomDebug)
 				{
 					DrawDebugString(GetWorld(), HitResult.Location, GetNameSafe(PhysMaterial), nullptr, FColor::White, 4.f);
 				}
 			}
 			
 			// Debug
-			if (DebugShowFootsteps > 0)
+			if (bShowCustomDebug)
 			{
 				DrawDebugSphere(GetWorld(), HitResult.Location, 16.f, 16, FColor::Blue, false, 4.f);
 			}

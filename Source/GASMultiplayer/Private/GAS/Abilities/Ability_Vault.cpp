@@ -44,13 +44,13 @@ bool UAbility_Vault::CommitCheck(const FGameplayAbilitySpecHandle Handle, const 
 	const FVector ForwardVector = Character->GetActorForwardVector();
 	const FVector UpVector = Character->GetActorUpVector();
 
-	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.AddUnique(Character);
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.AddUnique(Character);
 
 	// Debug
-	static const IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("ShowTraversalDebug"));
-	const bool bShowTraversal = CVar->GetInt() > 0;
-	EDrawDebugTrace::Type DebugDrawType = bShowTraversal ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
+	static const IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("ShowCustomDebug"));
+	const bool bShowCustomDebug = CVar->GetInt() > 0;
+	EDrawDebugTrace::Type DebugDrawType = bShowCustomDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 
 	// Jump to location
 	int32 JumpToLocationIndex = INDEX_NONE;
@@ -65,7 +65,7 @@ bool UAbility_Vault::CommitCheck(const FGameplayAbilitySpecHandle Handle, const 
 		const FVector TraceEnd = TraceStart + ForwardVector * HorizontalTraceLength;
 
 		if (UKismetSystemLibrary::SphereTraceSingleForObjects(this, TraceStart, TraceEnd, HorizontalTraceRadius,
-															  TraceObjectTypes, true, ActorsToIgnore, DebugDrawType, TraceHit, true))
+															  TraceObjectTypes, true, IgnoredActors, DebugDrawType, TraceHit, true))
 		{
 			if (JumpToLocationIndex == INDEX_NONE && (i < HorizontalTraceCount - 1))
 			{
@@ -121,7 +121,7 @@ bool UAbility_Vault::CommitCheck(const FGameplayAbilitySpecHandle Handle, const 
 		const FVector TraceEnd = TraceStart + UpVector * VerticalTraceLength * -1.f;
 
 		if (UKismetSystemLibrary::SphereTraceSingleForObjects(this, TraceStart, TraceEnd, VerticalTraceRadius,
-															  TraceObjectTypes, true, ActorsToIgnore, DebugDrawType, TraceHit, true))
+															  TraceObjectTypes, true, IgnoredActors, DebugDrawType, TraceHit, true))
 		{
 			JumpOverLocation = TraceHit.ImpactPoint;
 			if (i == 0)
@@ -143,13 +143,13 @@ bool UAbility_Vault::CommitCheck(const FGameplayAbilitySpecHandle Handle, const 
 
 	const FVector TraceStart = JumpOverLocation + ForwardVector * VerticalTraceStep;
 	if (UKismetSystemLibrary::SphereTraceSingleForObjects(this, TraceStart, JumpOverLocation, VerticalTraceRadius,
-														  TraceObjectTypes, true, ActorsToIgnore, DebugDrawType, TraceHit, true))
+														  TraceObjectTypes, true, IgnoredActors, DebugDrawType, TraceHit, true))
 	{
 		JumpOverLocation = TraceHit.ImpactPoint;
 	}
 
 	// Debug
-	if (bShowTraversal)
+	if (bShowCustomDebug)
 	{
 		DrawDebugSphere(GetWorld(), JumpToLocation, 15.f, 16, FColor::White, false, 7.f);
 		DrawDebugString(GetWorld(), JumpToLocation, FString("JumpToLocation"), nullptr, FColor::Black, 7.f);

@@ -2,20 +2,11 @@
 
 #pragma once
 
-/** Footstep debug */
-static TAutoConsoleVariable<int32> CVarShowFootstepDebug(
-	TEXT("ShowFootstepDebug"),
+/** Custom debug */
+static TAutoConsoleVariable<int32> CVarShowCustomDebug(
+	TEXT("ShowCustomDebug"),
 	0,
-	TEXT("Draws footstep debug info")
-	TEXT(" 0: Off |")
-	TEXT(" 1: On"),
-	ECVF_Cheat);
-
-/** Traversal debug */
-static TAutoConsoleVariable<int32> CVarShowTraversalDebug(
-	TEXT("ShowTraversalDebug"),
-	0,
-	TEXT("Draws traversal debug info")
+	TEXT("Draws custom debug info")
 	TEXT(" 0: Off |")
 	TEXT(" 1: On"),
 	ECVF_Cheat);

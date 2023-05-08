@@ -192,6 +192,10 @@ public:
 	UFUNCTION()
 	FCharacterData GetCharacterData() const { return CharacterData; }
 
+	/** Apply given gameplay effect to self */
+	UFUNCTION()
+	bool ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect> Effect, const FGameplayEffectContextHandle& EffectContext) const;
+
 protected:
 
 	/** Give abilities */
@@ -211,10 +215,6 @@ protected:
 	void OnRep_CharacterData();
 
 private:
-
-	/** Apply given gameplay effect to self */
-	UFUNCTION()
-	bool ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect> Effect, const FGameplayEffectContextHandle& EffectContext) const;
 
 	/** Function bound to the delegate that is called whenever the MaxMovementSpeed attribute is changed */
 	void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data);

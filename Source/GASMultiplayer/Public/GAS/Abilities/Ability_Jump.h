@@ -2,8 +2,10 @@
 
 #pragma once
 
+// Unreal Engine
 #include "CoreMinimal.h"
 #include "BaseGameplayAbility.h"
+
 #include "Ability_Jump.generated.h"
 
 /**
@@ -36,5 +38,23 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 #pragma endregion ABILITY
+
+#pragma region JUMP
+
+protected:
+
+	/** Wall Run state tag */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Jump|WallRun")
+	FGameplayTag WallRunStateTag;
+
+	/** Wall Run state left tag */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Jump|WallRun")
+	FGameplayTag WallRunStateLeftTag;
+
+	/** Jump strength when jumping off wall */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Jump|WallRun")
+	float OffWallJumpStrength = 300.f;
+
+#pragma endregion JUMP
 	
 };
