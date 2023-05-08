@@ -6,11 +6,11 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "AbilitySystemComponent.h"
 
 // GASMultiplayer
-#include "AbilitySystemComponent.h"
 #include "Character/BaseCharacter.h"
-#include "GAS/AbilityTasks/AbilityTask_TickWallRun.h"
+#include "GAS/Abilities/AbilityTasks/AbilityTask_TickWallRun.h"
 
 #pragma region INITIALIZATION
 

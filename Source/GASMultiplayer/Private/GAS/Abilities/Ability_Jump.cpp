@@ -58,12 +58,23 @@ void UAbility_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 					AbilitySystemComponent->CancelAbilities(&WallRunTags);
 
 					FVector InputDirection = Character->GetCharacterMovement()->GetCurrentAcceleration().GetSafeNormal();
-
-					// If there's no input direction, then use a perpendicular direction for the jump
+					const FRotator ForwardRotation = Character->GetActorForwardVector().Rotation();
+					InputDirection = ForwardRotation.RotateVector(InputDirection);
+					
 					if (InputDirection.IsZero()) 
 					{
+						// If there's no input direction, then use a perpendicular direction for the jump
 						InputDirection = Character->GetActorRightVector();
 						if (!AbilitySystemComponent->HasMatchingGameplayTag(WallRunStateLeftTag))
+						{
+							InputDirection *= -1.f;
+						}
+					}
+					else
+					{
+						// If the input direction is similar to the side the wall is regarding the player, then negate the direction
+						if ((InputDirection.Equals(Character->GetActorRightVector(), 0.2) && !AbilitySystemComponent->HasMatchingGameplayTag(WallRunStateLeftTag)) ||
+							(InputDirection.Equals(-Character->GetActorRightVector(), 0.2) && AbilitySystemComponent->HasMatchingGameplayTag(WallRunStateLeftTag)))
 						{
 							InputDirection *= -1.f;
 						}

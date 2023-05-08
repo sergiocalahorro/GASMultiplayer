@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GAS/AbilityTasks/AbilityTask_TickWallRun.h"
+#include "GAS/Abilities/AbilityTasks/AbilityTask_TickWallRun.h"
 
 // Unreal Engine
 #include "GameFramework/Character.h"
