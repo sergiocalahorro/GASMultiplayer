@@ -8,6 +8,9 @@
 
 #include "ItemStaticData.generated.h"
 
+// Forward declarations - GASMultiplayer
+class AItemActor;
+
 /**
  * 
  */
@@ -19,6 +22,14 @@ class GASMULTIPLAYER_API UItemStaticData : public UObject
 public:
 
 	/** Item Name */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
 	FName Name;
+
+	/** Item Actor's class */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
+	TSubclassOf<AItemActor> ItemActorClass;
+
+	/** Component's socket name where the item will be attached */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
+	FName AttachmentSocketName = NAME_None;
 };

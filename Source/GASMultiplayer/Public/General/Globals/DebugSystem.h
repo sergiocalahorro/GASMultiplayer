@@ -10,3 +10,11 @@ static TAutoConsoleVariable<int32> CVarShowCustomDebug(
 	TEXT(" 0: Off |")
 	TEXT(" 1: On"),
 	ECVF_Cheat);
+
+static TAutoConsoleVariable<int32> CVarShowInventoryDebug(
+	TEXT("ShowInventoryDebug"),
+	0,
+	TEXT("Shows inventory debug info")
+	TEXT(" 0: Off |")
+	TEXT(" 1: On"),
+	ECVF_Cheat);

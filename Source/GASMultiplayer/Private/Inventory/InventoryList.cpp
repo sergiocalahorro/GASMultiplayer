@@ -22,7 +22,7 @@ void FInventoryList::RemoveItem(TSubclassOf<UItemStaticData> ItemStaticDataClass
 	for (auto ItemIter = Items.CreateIterator(); ItemIter; ++ItemIter)
 	{
 		FInventoryListItem& Item = *ItemIter;
-		if (Item.ItemInstance && Item.ItemInstance->IsA(ItemStaticDataClass))
+		if (Item.ItemInstance && Item.ItemInstance->GetItemStaticData()->IsA(ItemStaticDataClass))
 		{
 			ItemIter.RemoveCurrent();
 			MarkArrayDirty();

@@ -18,6 +18,8 @@ struct FInventoryList : public FFastArraySerializer
 {
 	GENERATED_BODY()
 
+public:
+
 	/** Net serialize delta this structure. Serialize a network delta from a base state */
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo &DeltaParams)
 	{
@@ -29,6 +31,9 @@ struct FInventoryList : public FFastArraySerializer
 
 	/** Remove item from inventory */
 	void RemoveItem(TSubclassOf<UItemStaticData> ItemStaticDataClass);
+
+	/** Getter of Items reference */
+	TArray<FInventoryListItem>& GetItemsRef() { return Items; }
 
 protected:
 

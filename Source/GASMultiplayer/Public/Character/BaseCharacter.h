@@ -30,6 +30,7 @@ class UCharacterDataAsset;
 class UFootstepsComponent;
 class UCustomMotionWarpingComponent;
 class UCustomCharacterMovementComponent;
+class UInventoryComponent;
 
 UCLASS(config=Game)
 class ABaseCharacter : public ACharacter, public IAbilitySystemInterface
@@ -113,6 +114,10 @@ private:
 
 	/** Custom Character Movement component */
 	TObjectPtr<UCustomCharacterMovementComponent> CustomCharacterMovementComponent;
+
+	/** Inventory component */ 
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "AA|Components")
+	TObjectPtr<UInventoryComponent> InventoryComponent;
 
 #pragma endregion COMPONENTS
 
@@ -273,16 +278,11 @@ protected:
 
 #pragma endregion GAS_TAGS
 
-#pragma region GAS_DELEGATES
-
-protected:
-
-	/** Delegate called every time MaxMovementSpeed attribute is changed */
-	FDelegateHandle MaxMovementSpeedChangedDelegateHandle;
-
-#pragma region GAS_DELEGATES
-
 #pragma endregion GAS
+
+#pragma region INVENTORY
+
+	
 	
 };
 

@@ -21,6 +21,7 @@
 #include "General/Components/CustomCharacterMovementComponent.h"
 #include "General/Components/FootstepsComponent.h"
 #include "General/Components/CustomMotionWarpingComponent.h"
+#include "General/Components/InventoryComponent.h"
 #include "General/DataAssets/CharacterDataAsset.h"
 
 #pragma region INITIALIZATION
@@ -56,11 +57,12 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-
 	
 	FootstepsComponent = CreateDefaultSubobject<UFootstepsComponent>(TEXT("FootstepsComponent"));
 	CustomMotionWarpingComponent = CreateDefaultSubobject<UCustomMotionWarpingComponent>(TEXT("CustomMotionWarpingComponent"));
 	CustomCharacterMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	InventoryComponent->SetIsReplicated(true);
 
 	// GAS setup
 	AbilitySystemComponent = CreateDefaultSubobject<UBaseAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
@@ -122,6 +124,7 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABaseCharacter, CharacterData);
+	DOREPLIFETIME(ABaseCharacter, InventoryComponent);
 }
 
 /** Tell client that the Pawn is begin restarted */

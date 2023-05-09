@@ -10,11 +10,12 @@
 
 // Forward declarations - GASMultiplayer
 class UItemStaticData;
+class AItemActor;
 
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class GASMULTIPLAYER_API UInventoryItemInstance : public UObject
 {
 	GENERATED_BODY()
@@ -47,11 +48,19 @@ public:
 
 	/** Functionality performed when the item is equipped */
 	UFUNCTION()
-	virtual void OnEquipped() PURE_VIRTUAL(UItemStaticData::OnEquipped);
+	virtual void OnEquipped(AActor* InOwner = nullptr);
 
 	/** Functionality performed when the item is unequipped */
 	UFUNCTION()
-	virtual void OnUnequipped() PURE_VIRTUAL(UItemStaticData::OnUnequipped);
+	virtual void OnUnequipped();
+
+	/** Functionality performed when the item is dropped */
+	UFUNCTION()
+	virtual void OnDropped();
+
+	/** Get ItemStaticData */
+	UFUNCTION()
+	const UItemStaticData* GetItemStaticData() const;
 
 public:
 
@@ -62,6 +71,12 @@ public:
 	/** Whether the time is equipped */
 	UPROPERTY(ReplicatedUsing = OnRep_Equipped)
 	bool bEquipped = false;
+
+protected:
+
+	/** Item Actor's reference */
+	UPROPERTY(Replicated)
+	TObjectPtr<AItemActor> ItemActor;
 
 #pragma endregion ITEM
 	
