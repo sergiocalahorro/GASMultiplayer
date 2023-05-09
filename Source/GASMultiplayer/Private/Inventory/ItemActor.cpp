@@ -10,7 +10,9 @@
 #include "AbilitySystemBlueprintLibrary.h"
 
 // GASMultiplayer
+#include "General/Components/InventoryComponent.h"
 #include "Inventory/InventoryItemInstance.h"
+#include "Inventory/ItemStaticData.h"
 
 #pragma region INITIALIZATION
 
@@ -19,6 +21,7 @@ AItemActor::AItemActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+	SetReplicateMovement(true);
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	RootComponent = StaticMeshComponent;
@@ -43,6 +46,18 @@ void AItemActor::PostInitializeComponents()
 void AItemActor::BeginPlay() 
 {
 	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		if (!IsValid(ItemInstance) && IsValid(ItemStaticDataClass))
+		{
+			ItemInstance = NewObject<UInventoryItemInstance>();
+			ItemInstance->Init(ItemStaticDataClass);
+			
+			SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			SphereComponent->SetGenerateOverlapEvents(true);
+		}
+	}
 }
 
 /** Called every frame */
@@ -83,6 +98,7 @@ void AItemActor::OnEquipped()
 {
 	ItemState = EItemState::Equipped;
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SphereComponent->SetGenerateOverlapEvents(false);
 }
 
 /** Functionality performed when the item is unequipped */
@@ -90,13 +106,13 @@ void AItemActor::OnUnequipped()
 {
 	ItemState = EItemState::None;
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SphereComponent->SetGenerateOverlapEvents(false);
 }
 
 /** Functionality performed when the item is dropped */
 void AItemActor::OnDropped()
 {
 	ItemState = EItemState::Dropped;
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	GetRootComponent()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 
@@ -122,27 +138,45 @@ void AItemActor::OnDropped()
 		const bool bShowTraversal = CVar->GetInt() > 0;
 		EDrawDebugTrace::Type DebugDrawType = bShowTraversal ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 		
+		FVector TargetLocation = TraceEnd;
+		
 		if (UKismetSystemLibrary::LineTraceSingleByProfile(this, TraceStart, TraceEnd, TEXT("WorldStatic"), true,
 			IgnoredActors, DebugDrawType, Hit, true))
 		{
 			if (Hit.bBlockingHit)
 			{
-				SetActorLocation(Hit.Location);
+				TargetLocation = Hit.Location;
 			}
-			return;
 		}
 
-		SetActorLocation(TraceEnd);
+		SetActorLocation(TargetLocation);
+
+		SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		SphereComponent->SetGenerateOverlapEvents(true);
 	}
 }
 
 /** Functionality performed when some Actor enters Item's sphere */
 void AItemActor::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	FGameplayEventData Payload;
-	Payload.OptionalObject = this;
+	if (HasAuthority())
+	{
+		FGameplayEventData EventPayload;
+		EventPayload.Instigator = this;
+		EventPayload.OptionalObject = ItemInstance;
+		EventPayload.EventTag = UInventoryComponent::EquipItemActorTag;
 	
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OtherActor, SphereBeginOverlapEventTag, Payload);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OtherActor, UInventoryComponent::EquipItemActorTag, EventPayload);
+	}
+}
+
+/** Replicate ItemState */
+void AItemActor::OnRep_ItemState()
+{
+	const bool bEnableCollision = ItemState == EItemState::Dropped;
+	const ECollisionEnabled::Type CollisionEnabled = bEnableCollision ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision;
+	SphereComponent->SetCollisionEnabled(CollisionEnabled);
+	SphereComponent->SetGenerateOverlapEvents(bEnableCollision);
 }
 
 #pragma endregion ITEM

@@ -152,6 +152,15 @@ protected:
 	/** Called when sprint is stopped */
 	void StopSprint(const FInputActionValue& Value);
 
+	/** Called when item is equipped */
+	void EquipNextItem(const FInputActionValue& Value);
+
+	/** Called when item is unequipped */
+	void UnequipItem(const FInputActionValue& Value);
+
+	/** Called when item is dropped */
+	void DropItem(const FInputActionValue& Value);
+
 private:
 	
 	/** MappingContext */
@@ -177,6 +186,18 @@ private:
 	/** Sprint Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> SprintAction;
+
+	/** Equip next item Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> EquipNextItemAction;
+
+	/** Unequip item Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> UnequipItemAction;
+
+	/** Drop item Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> DropItemAction;
 
 #pragma endregion INPUT
 

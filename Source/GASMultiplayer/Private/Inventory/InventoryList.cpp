@@ -16,6 +16,14 @@ void FInventoryList::AddItem(TSubclassOf<UItemStaticData> ItemStaticDataClass)
 	MarkItemDirty(Item);
 }
 
+/** Add item to inventory */
+void FInventoryList::AddItem(UInventoryItemInstance* InItemInstance)
+{
+	FInventoryListItem& Item = Items.AddDefaulted_GetRef();
+	Item.ItemInstance = InItemInstance;
+	MarkItemDirty(Item);
+}
+
 /** Remove item from inventory */
 void FInventoryList::RemoveItem(TSubclassOf<UItemStaticData> ItemStaticDataClass)
 {
@@ -23,6 +31,21 @@ void FInventoryList::RemoveItem(TSubclassOf<UItemStaticData> ItemStaticDataClass
 	{
 		FInventoryListItem& Item = *ItemIter;
 		if (Item.ItemInstance && Item.ItemInstance->GetItemStaticData()->IsA(ItemStaticDataClass))
+		{
+			ItemIter.RemoveCurrent();
+			MarkArrayDirty();
+			break;
+		}
+	}
+}
+
+/** Remove item from inventory */
+void FInventoryList::RemoveItem(UInventoryItemInstance* InItemInstance)
+{
+	for (auto ItemIter = Items.CreateIterator(); ItemIter; ++ItemIter)
+	{
+		FInventoryListItem& Item = *ItemIter;
+		if (Item.ItemInstance && Item.ItemInstance == InItemInstance)
 		{
 			ItemIter.RemoveCurrent();
 			MarkArrayDirty();

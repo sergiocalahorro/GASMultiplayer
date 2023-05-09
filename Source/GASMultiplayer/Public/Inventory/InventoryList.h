@@ -28,9 +28,11 @@ public:
 
 	/** Add item to inventory */
 	void AddItem(TSubclassOf<UItemStaticData> ItemStaticDataClass);
+	void AddItem(UInventoryItemInstance* InItemInstance);
 
 	/** Remove item from inventory */
 	void RemoveItem(TSubclassOf<UItemStaticData> ItemStaticDataClass);
+	void RemoveItem(UInventoryItemInstance* InItemInstance);
 
 	/** Getter of Items reference */
 	TArray<FInventoryListItem>& GetItemsRef() { return Items; }

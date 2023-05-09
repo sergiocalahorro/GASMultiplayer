@@ -29,6 +29,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
 	TSubclassOf<AItemActor> ItemActorClass;
 
+	/** Whether the item can be equipped */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
+	bool bCanBeEquipped = false;
+
 	/** Component's socket name where the item will be attached */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
 	FName AttachmentSocketName = NAME_None;

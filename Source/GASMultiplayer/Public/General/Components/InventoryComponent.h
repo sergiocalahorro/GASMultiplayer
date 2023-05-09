@@ -5,6 +5,7 @@
 // Unreal Engine
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Abilities/GameplayAbilityTypes.h"
 
 // GASMultiplayer
 #include "Inventory/InventoryList.h"
@@ -55,16 +56,26 @@ public:
 	/** Add item to inventory */
 	UFUNCTION(BlueprintCallable)
 	void AddItem(TSubclassOf<UItemStaticData> ItemStaticDataClass);
-	void AddItem(UInventoryItemInstance* InItem);
+
+	/** Add item instance to inventory */
+	UFUNCTION(BlueprintCallable)
+	void AddItemInstance(UInventoryItemInstance* InItemInstance);
 
 	/** Remove item from inventory */
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(TSubclassOf<UItemStaticData> ItemStaticDataClass);
-	void RemoveItem(UInventoryItemInstance* InItem);
+
+	/** Remove item from inventory */
+	UFUNCTION(BlueprintCallable)
+	void RemoveItemInstance(UInventoryItemInstance* InItemInstance);
 
 	/** Equip item */
 	UFUNCTION(BlueprintCallable)
 	void EquipItem(TSubclassOf<UItemStaticData> ItemStaticDataClass);
+
+	/** Equip item instance */
+	UFUNCTION(BlueprintCallable)
+	void EquipItemInstance(UInventoryItemInstance* InItemInstance);
 
 	/** Unequip item */
 	UFUNCTION(BlueprintCallable)
@@ -74,9 +85,43 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DropItem();
 
+	/** Equip next item */
+	UFUNCTION(BlueprintCallable)
+	void EquipNextItem();
+
 	/** Getter of EquippedItem */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UInventoryItemInstance* GetEquippedItem() const { return EquippedItem; }
+
+	/** Gameplay Event callback */
+	virtual void GameplayEventCallBack(const FGameplayEventData* Payload);
+
+protected:
+
+	/** Add Gameplay tags */
+	UFUNCTION()
+	void AddInventoryTags();
+
+	/** Handle Gameplay event */
+	void HandleGameplayEvent_Internal(FGameplayEventData Payload);
+
+	/** Handle Gameplay event (Server) */
+	UFUNCTION(Server, Reliable)
+	void ServerHandleGameplayEvent(FGameplayEventData Payload);
+
+public:
+	
+	/** Equip item actor tag */
+	static FGameplayTag EquipItemActorTag;
+
+	/** Unequip item tag */
+	static FGameplayTag UnequipItemTag;
+
+	/** Drop item tag */
+	static FGameplayTag DropItemTag;
+
+	/** Equip next item tag */
+	static FGameplayTag EquipNextItemTag;
 
 protected:
 
@@ -91,6 +136,9 @@ protected:
 	/** Currently equipped item */
 	UPROPERTY(Replicated)
 	TObjectPtr<UInventoryItemInstance> EquippedItem;
+
+	/** Gameplay tag delegate handle */
+	FDelegateHandle TagDelegateHandle;
 	
 #pragma endregion INVENTORY
 

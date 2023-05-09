@@ -228,6 +228,24 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ABaseCharacter::StartSprint);
 			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopSprint);
 		}
+
+		// Equip next item
+		if (EquipNextItemAction)
+		{
+			EnhancedInputComponent->BindAction(EquipNextItemAction, ETriggerEvent::Triggered, this, &ABaseCharacter::EquipNextItem);
+		}
+
+		// Unequip item
+		if (UnequipItemAction)
+		{
+			EnhancedInputComponent->BindAction(UnequipItemAction, ETriggerEvent::Triggered, this, &ABaseCharacter::UnequipItem);
+		}
+
+		// Drop item
+		if (DropItemAction)
+		{
+			EnhancedInputComponent->BindAction(DropItemAction, ETriggerEvent::Triggered, this, &ABaseCharacter::DropItem);
+		}
 	}
 }
 
@@ -317,6 +335,33 @@ void ABaseCharacter::StopSprint(const FInputActionValue& Value)
 	{
 		AbilitySystemComponent->CancelAbilities(&SprintTags);
 	}
+}
+
+/** Called when item is equipped */
+void ABaseCharacter::EquipNextItem(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = UInventoryComponent::EquipNextItemTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, UInventoryComponent::EquipNextItemTag, EventPayload);
+}
+
+/** Called when item is unequipped */
+void ABaseCharacter::UnequipItem(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = UInventoryComponent::UnequipItemTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, UInventoryComponent::UnequipItemTag, EventPayload);	
+}
+
+/** Called when item is dropped */
+void ABaseCharacter::DropItem(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = UInventoryComponent::DropItemTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, UInventoryComponent::DropItemTag, EventPayload);
 }
 
 #pragma endregion INPUT

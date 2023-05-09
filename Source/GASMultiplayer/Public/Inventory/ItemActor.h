@@ -17,6 +17,7 @@ class USphereComponent;
 
 // Forward declarations - GASMultiplayer
 class UInventoryItemInstance;
+class UItemStaticData;
 
 UCLASS()
 class GASMULTIPLAYER_API AItemActor : public AActor
@@ -93,19 +94,23 @@ public:
 	UFUNCTION()
 	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	/** Replicate ItemState */
+	UFUNCTION()
+	void OnRep_ItemState();
+	
 protected:
 
 	/** Item instance */
 	UPROPERTY(Replicated)
 	TObjectPtr<UInventoryItemInstance> ItemInstance;
 
-	/** Item state */
-	UPROPERTY(Replicated)
-	EItemState ItemState = EItemState::None;
+	/** Item static data class */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Item")
+	TSubclassOf<UItemStaticData> ItemStaticDataClass;
 
-	/** Event tag for Sphere's begin overlap */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Item|GAS")
-	FGameplayTag SphereBeginOverlapEventTag;
+	/** Item state */
+	UPROPERTY(ReplicatedUsing = OnRep_ItemState)
+	EItemState ItemState = EItemState::None;
 	
 #pragma endregion ITEM
 
