@@ -174,6 +174,12 @@ protected:
 	/** Called when item is dropped */
 	void DropItem(const FInputActionValue& Value);
 
+	/** Called when attack is started */
+	void StartAttack(const FInputActionValue& Value);
+
+	/** Called when attack is stopped */
+	void StopAttack(const FInputActionValue& Value);
+
 private:
 	
 	/** MappingContext */
@@ -211,6 +217,10 @@ private:
 	/** Drop item Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> DropItemAction;
+
+	/** Attack Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> AttackAction;
 
 #pragma endregion INPUT
 
@@ -297,6 +307,14 @@ protected:
 	/** Gameplay event tag: Jump */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
 	FGameplayTag JumpEventTag;
+
+	/** Gameplay event tag: StartAttack */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTag StartAttackEventTag;
+
+	/** Gameplay event tag: StopAttack */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTag StopAttackEventTag;
 
 	/** Tags applied while in air */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")

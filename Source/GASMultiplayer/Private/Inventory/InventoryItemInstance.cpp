@@ -5,11 +5,13 @@
 // Unreal Engine
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 // GASMultiplayer
 #include "General/BlueprintFunctionLibraries/GASMultiplayerStatics.h"
-#include "Inventory/ItemActor.h"
-#include "Inventory/ItemStaticData.h"
+#include "Inventory/Item/ItemActor.h"
+#include "Inventory/Item/ItemStaticData.h"
 
 #pragma region OVERRIDES
 
@@ -62,30 +64,33 @@ void UInventoryItemInstance::OnEquipped(AActor* InOwner)
 			}
 		}
 	}
-	
+
+	TryGrantAbilities(InOwner);
 	bEquipped = true;
 }
 
 /** Functionality performed when the item is unequipped */
-void UInventoryItemInstance::OnUnequipped()
+void UInventoryItemInstance::OnUnequipped(AActor* InOwner)
 {
 	if (IsValid(ItemActor))
 	{
 		ItemActor->Destroy();
 		ItemActor = nullptr;
 	}
-	
+
+	TryRemoveAbilities(InOwner);
 	bEquipped = false;
 }
 
 /** Functionality performed when the item is dropped */
-void UInventoryItemInstance::OnDropped()
+void UInventoryItemInstance::OnDropped(AActor* InOwner)
 {
 	if (IsValid(ItemActor))
 	{
 		ItemActor->OnDropped();
 	}
 
+	TryRemoveAbilities(InOwner);
 	bEquipped = false;
 }
 
@@ -93,6 +98,45 @@ void UInventoryItemInstance::OnDropped()
 const UItemStaticData* UInventoryItemInstance::GetItemStaticData() const
 {
 	return UGASMultiplayerStatics::GetItemStaticData(ItemStaticDataClass);
+}
+
+/** Get ItemActor */
+AItemActor* UInventoryItemInstance::GetItemActor() const
+{
+	return ItemActor;
+}
+
+/** Try granting item's abilities */
+void UInventoryItemInstance::TryGrantAbilities(AActor* InOwner)
+{
+	if (IsValid(InOwner) && InOwner->HasAuthority())
+	{
+		if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InOwner))
+		{
+			const UItemStaticData* ItemStaticData = GetItemStaticData();
+			for (TSubclassOf<UGameplayAbility> ItemAbilityClass : ItemStaticData->GrantedAbilities)
+			{
+				GrantedAbilityHandles.Add(AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(ItemAbilityClass)));
+			}
+		}
+	}
+}
+
+/** Try removing item's abilities */
+void UInventoryItemInstance::TryRemoveAbilities(AActor* InOwner)
+{
+	if (IsValid(InOwner) && InOwner->HasAuthority())
+	{
+		if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InOwner))
+		{
+			for (FGameplayAbilitySpecHandle ItemAbilitySpecHandle : GrantedAbilityHandles)
+			{
+				AbilitySystemComponent->ClearAbility(ItemAbilitySpecHandle);
+			}
+			
+			GrantedAbilityHandles.Empty();
+		}
+	}
 }
 
 #pragma endregion ITEM

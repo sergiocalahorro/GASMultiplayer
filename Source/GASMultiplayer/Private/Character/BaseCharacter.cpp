@@ -211,21 +211,21 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		// Jumping
 		if (JumpAction)
 		{
-			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABaseCharacter::StartJump);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABaseCharacter::StartJump);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopJump);
 		}
 
 		// Crouching
 		if (CrouchAction)
 		{
-			EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ABaseCharacter::StartCrouch);
+			EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ABaseCharacter::StartCrouch);
 			EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopCrouch);
 		}
 
 		// Sprinting
 		if (SprintAction)
 		{
-			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ABaseCharacter::StartSprint);
+			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ABaseCharacter::StartSprint);
 			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopSprint);
 		}
 
@@ -245,6 +245,13 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		if (DropItemAction)
 		{
 			EnhancedInputComponent->BindAction(DropItemAction, ETriggerEvent::Triggered, this, &ABaseCharacter::DropItem);
+		}
+
+		// Drop item
+		if (AttackAction)
+		{
+			EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ABaseCharacter::StartAttack);
+			EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopAttack);
 		}
 	}
 }
@@ -362,6 +369,24 @@ void ABaseCharacter::DropItem(const FInputActionValue& Value)
 	EventPayload.EventTag = UInventoryComponent::DropItemTag;
 
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, UInventoryComponent::DropItemTag, EventPayload);
+}
+
+/** Called when attack is started */
+void ABaseCharacter::StartAttack(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = StartAttackEventTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, StartAttackEventTag, EventPayload);
+}
+
+/** Called when attack is stopped */
+void ABaseCharacter::StopAttack(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = StopAttackEventTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, StopAttackEventTag, EventPayload);
 }
 
 #pragma endregion INPUT

@@ -12,8 +12,7 @@
 // GASMultiplayer
 #include "General/Globals/DebugSystem.h"
 #include "Inventory/InventoryItemInstance.h"
-#include "Inventory/ItemStaticData.h"
-#include "Inventory/ItemActor.h"
+#include "Inventory/Item/ItemStaticData.h"
 
 // Static variables
 FGameplayTag UInventoryComponent::EquipItemActorTag;
@@ -198,7 +197,7 @@ void UInventoryComponent::UnequipItem()
 	{
 		if (IsValid(EquippedItem))
 		{
-			EquippedItem->OnUnequipped();
+			EquippedItem->OnUnequipped(GetOwner());
 			EquippedItem = nullptr;
 		}
 	}
@@ -212,7 +211,7 @@ void UInventoryComponent::DropItem()
 		if (IsValid(EquippedItem))
 		{
 			RemoveItemInstance(EquippedItem);
-			EquippedItem->OnDropped();
+			EquippedItem->OnDropped(GetOwner());
 			EquippedItem = nullptr;
 		}
 	}

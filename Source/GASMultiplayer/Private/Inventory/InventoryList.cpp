@@ -5,7 +5,7 @@
 // GASMultiplayer
 #include "Inventory/InventoryItemInstance.h"
 #include "Inventory/InventoryListItem.h"
-#include "Inventory/ItemStaticData.h"
+#include "Inventory/Item/ItemStaticData.h"
 
 /** Add item to inventory */
 void FInventoryList::AddItem(TSubclassOf<UItemStaticData> ItemStaticDataClass)

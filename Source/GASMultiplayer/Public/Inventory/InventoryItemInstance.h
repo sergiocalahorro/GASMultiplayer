@@ -5,6 +5,7 @@
 // Unreal Engine
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "Abilities/GameplayAbilityTypes.h"
 
 #include "InventoryItemInstance.generated.h"
 
@@ -42,26 +43,40 @@ public:
 	UFUNCTION()
 	virtual void Init(TSubclassOf<UItemStaticData> InItemStaticDataClass);
 
-	/** Replicate bEquipped */
-	UFUNCTION()
-	void OnRep_Equipped();
-
 	/** Functionality performed when the item is equipped */
 	UFUNCTION()
 	virtual void OnEquipped(AActor* InOwner = nullptr);
 
 	/** Functionality performed when the item is unequipped */
 	UFUNCTION()
-	virtual void OnUnequipped();
+	virtual void OnUnequipped(AActor* InOwner = nullptr);
 
 	/** Functionality performed when the item is dropped */
 	UFUNCTION()
-	virtual void OnDropped();
+	virtual void OnDropped(AActor* InOwner = nullptr);
 
 	/** Get ItemStaticData */
 	UFUNCTION()
 	const UItemStaticData* GetItemStaticData() const;
 
+	/** Get ItemActor */
+	UFUNCTION()
+	AItemActor* GetItemActor() const;
+
+protected:
+	
+	/** Replicate bEquipped */
+	UFUNCTION()
+	void OnRep_Equipped();
+
+	/** Try granting item's abilities */
+	UFUNCTION()
+	void TryGrantAbilities(AActor* InOwner);
+
+	/** Try removing item's abilities */
+	UFUNCTION()
+	void TryRemoveAbilities(AActor* InOwner);
+	
 public:
 
 	/** Item class */
@@ -77,6 +92,10 @@ protected:
 	/** Item Actor's reference */
 	UPROPERTY(Replicated)
 	TObjectPtr<AItemActor> ItemActor;
+
+	/** Handles for granted abilities */
+	UPROPERTY()
+	TArray<FGameplayAbilitySpecHandle> GrantedAbilityHandles;
 
 #pragma endregion ITEM
 	

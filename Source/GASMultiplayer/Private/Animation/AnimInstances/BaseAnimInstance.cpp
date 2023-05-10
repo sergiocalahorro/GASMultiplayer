@@ -5,7 +5,7 @@
 // GASMultiplayer
 #include "Character/BaseCharacter.h"
 #include "General/DataAssets/CharacterAnimationDataAsset.h"
-#include "Inventory/ItemStaticData.h"
+#include "Inventory/Item/ItemStaticData.h"
 
 /** Get Locomotion BlendSpace */
 UBlendSpace* UBaseAnimInstance::GetLocomotionBlendSpace(const EAnimLocomotionState LocomotionState) const

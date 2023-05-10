@@ -3,7 +3,7 @@
 #include "General/BlueprintFunctionLibraries/GASMultiplayerStatics.h"
 
 // GASMultiplayer
-#include "Inventory/ItemStaticData.h"
+#include "Inventory/Item/ItemStaticData.h"
 
 /** Get item static data */
 const UItemStaticData* UGASMultiplayerStatics::GetItemStaticData(TSubclassOf<UItemStaticData> ItemDataClass)
