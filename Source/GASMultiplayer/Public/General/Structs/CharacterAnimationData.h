@@ -5,6 +5,9 @@
 // Unreal Engine
 #include "CoreMinimal.h"
 
+// GASMultiplayer
+#include "General/Enums/AnimLocomotionState.h"
+
 #include "CharacterAnimationData.generated.h"
 
 // Forward declarations - Unreal Engine
@@ -15,19 +18,13 @@ struct FCharacterAnimationData
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** Locomotion BlendSpace's reference */
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UBlendSpace> LocomotionBlendSpace;
+public:
 
-	/** Idle Animation asset */
+	/** Locomotion BlendSpace */
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UAnimSequenceBase> IdleAnimationAsset;
-	
-	/** Crouch locomotion BlendSpace's reference */
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UBlendSpace> CrouchLocomotionBlendSpace;
+	TMap<EAnimLocomotionState, TObjectPtr<UBlendSpace>> LocomotionBlendSpace;
 
-	/** Crouch Idle Animation asset */
+	/** Idle Animation */
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UAnimSequenceBase> CrouchIdleAnimationAsset;
+	TMap<EAnimLocomotionState, TObjectPtr<UAnimSequenceBase>> IdleAnimation;
 };

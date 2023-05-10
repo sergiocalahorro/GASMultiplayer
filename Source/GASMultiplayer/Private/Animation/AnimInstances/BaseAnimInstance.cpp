@@ -5,59 +5,54 @@
 // GASMultiplayer
 #include "Character/BaseCharacter.h"
 #include "General/DataAssets/CharacterAnimationDataAsset.h"
+#include "Inventory/ItemStaticData.h"
 
-/** Get Locomotion BlendSpace's reference */
-UBlendSpace* UBaseAnimInstance::GetLocomotionBlendSpace() const
+/** Get Locomotion BlendSpace */
+UBlendSpace* UBaseAnimInstance::GetLocomotionBlendSpace(const EAnimLocomotionState LocomotionState) const
 {
+	UBlendSpace* LocomotionBlendSpace = *DefaultCharacterAnimationDataAsset->CharacterAnimationData.LocomotionBlendSpace.Find(LocomotionState);
+
 	if (const ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwningActor()))
 	{
-		if (const UCharacterAnimationDataAsset* CharacterAnimationDataAsset = Character->GetCharacterData().CharacterAnimationDataAsset)
+		if (const UItemStaticData* ItemStaticData = GetEquippedItemStaticData())
 		{
-			return CharacterAnimationDataAsset->CharacterAnimationData.LocomotionBlendSpace;
+			LocomotionBlendSpace = *ItemStaticData->CharacterAnimationData.LocomotionBlendSpace.Find(LocomotionState);
+		}
+		else if (const UCharacterAnimationDataAsset* CharacterAnimationDataAsset = Character->GetCharacterData().CharacterAnimationDataAsset)
+		{
+			LocomotionBlendSpace = *CharacterAnimationDataAsset->CharacterAnimationData.LocomotionBlendSpace.Find(LocomotionState);
 		}
 	}
 
-	return DefaultCharacterAnimationDataAsset ? DefaultCharacterAnimationDataAsset->CharacterAnimationData.LocomotionBlendSpace : nullptr;
+	return LocomotionBlendSpace;
 }
 
-/** Get Idle Animation asset */
-UAnimSequenceBase* UBaseAnimInstance::GetIdleAnimationAsset() const
+/** Get Idle Animation */
+UAnimSequenceBase* UBaseAnimInstance::GetIdleAnimation(const EAnimLocomotionState LocomotionState) const
 {
+	UAnimSequenceBase* IdleAnimation = *DefaultCharacterAnimationDataAsset->CharacterAnimationData.IdleAnimation.Find(LocomotionState);
+
 	if (const ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwningActor()))
 	{
-		if (const UCharacterAnimationDataAsset* CharacterAnimationDataAsset = Character->GetCharacterData().CharacterAnimationDataAsset)
+		if (const UItemStaticData* ItemStaticData = GetEquippedItemStaticData())
 		{
-			return CharacterAnimationDataAsset->CharacterAnimationData.IdleAnimationAsset;
+			IdleAnimation = *ItemStaticData->CharacterAnimationData.IdleAnimation.Find(LocomotionState);
+		}
+		else if (const UCharacterAnimationDataAsset* CharacterAnimationDataAsset = Character->GetCharacterData().CharacterAnimationDataAsset)
+		{
+			IdleAnimation = *CharacterAnimationDataAsset->CharacterAnimationData.IdleAnimation.Find(LocomotionState);
 		}
 	}
 
-	return DefaultCharacterAnimationDataAsset ? DefaultCharacterAnimationDataAsset->CharacterAnimationData.IdleAnimationAsset : nullptr;
+	return IdleAnimation;
 }
 
-/** Get Crouch Locomotion BlendSpace's reference */
-UBlendSpace* UBaseAnimInstance::GetCrouchLocomotionBlendSpace() const
+/** Get equipped item's static data */
+const UItemStaticData* UBaseAnimInstance::GetEquippedItemStaticData() const
 {
-	if (const ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwningActor()))
-	{
-		if (const UCharacterAnimationDataAsset* CharacterAnimationDataAsset = Character->GetCharacterData().CharacterAnimationDataAsset)
-		{
-			return CharacterAnimationDataAsset->CharacterAnimationData.CrouchLocomotionBlendSpace;
-		}
-	}
-
-	return DefaultCharacterAnimationDataAsset ? DefaultCharacterAnimationDataAsset->CharacterAnimationData.CrouchLocomotionBlendSpace : nullptr;
-}
-
-/** Get Crouch Idle Animation asset */
-UAnimSequenceBase* UBaseAnimInstance::GetCrouchIdleAnimationAsset() const
-{
-	if (const ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwningActor()))
-	{
-		if (const UCharacterAnimationDataAsset* CharacterAnimationDataAsset = Character->GetCharacterData().CharacterAnimationDataAsset)
-		{
-			return CharacterAnimationDataAsset->CharacterAnimationData.CrouchIdleAnimationAsset;
-		}
-	}
-
-	return DefaultCharacterAnimationDataAsset ? DefaultCharacterAnimationDataAsset->CharacterAnimationData.CrouchIdleAnimationAsset : nullptr;
+	const ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwningActor());
+	const UInventoryComponent* InventoryComponent = Character ? Character->GetInventoryComponent() : nullptr;
+	const UInventoryItemInstance* ItemInstance = InventoryComponent ? InventoryComponent->GetEquippedItem() : nullptr;
+	
+	return ItemInstance ? ItemInstance->GetItemStaticData() : nullptr;
 }

@@ -6,6 +6,9 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 
+// GASMultiplayer
+#include "General/Structs/CharacterAnimationData.h"
+
 #include "ItemStaticData.generated.h"
 
 // Forward declarations - GASMultiplayer
@@ -36,4 +39,8 @@ public:
 	/** Component's socket name where the item will be attached */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
 	FName AttachmentSocketName = NAME_None;
+
+	/** Component's socket name where the item will be attached */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
+	FCharacterAnimationData CharacterAnimationData;
 };

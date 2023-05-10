@@ -11,7 +11,9 @@
 #include "GameplayEffectTypes.h"
 
 // GASMultiplayer
+#include "General/Components/InventoryComponent.h"
 #include "General/Structs/CharacterData.h"
+#include "Inventory/InventoryItemInstance.h"
 
 #include "BaseCharacter.generated.h"
 
@@ -31,6 +33,8 @@ class UFootstepsComponent;
 class UCustomMotionWarpingComponent;
 class UCustomCharacterMovementComponent;
 class UInventoryComponent;
+class UInventoryItemInstance;
+class UItemStaticData;
 
 UCLASS(config=Game)
 class ABaseCharacter : public ACharacter, public IAbilitySystemInterface
@@ -93,6 +97,15 @@ public:
 
 	/** Getter of CustomMotionWarpingComponent */
 	FORCEINLINE UCustomMotionWarpingComponent* GetCustomMotionWarpingComponent() const { return CustomMotionWarpingComponent; }
+
+	/** Getter of InventoryComponent */
+	FORCEINLINE UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
+	/** Get the item that is currently equipped */
+	FORCEINLINE UInventoryItemInstance* GetEquippedItem() const { return InventoryComponent->GetEquippedItem(); }
+
+	/** Get the data from the item that is currently equipped */
+	FORCEINLINE const UItemStaticData* GetEquippedItemStaticData() const { return InventoryComponent->GetEquippedItem()->GetItemStaticData(); }
 
 private:
 
@@ -300,10 +313,5 @@ protected:
 #pragma endregion GAS_TAGS
 
 #pragma endregion GAS
-
-#pragma region INVENTORY
-
-	
-	
 };
 

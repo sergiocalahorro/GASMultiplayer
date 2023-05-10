@@ -5,10 +5,14 @@
 // Unreal Engine
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "General/Enums/AnimLocomotionState.h"
 
 #include "BaseAnimInstance.generated.h"
 
+// Forward declarations - GASMultiplayer
 class UCharacterAnimationDataAsset;
+class UItemStaticData;
+
 /**
  * 
  */
@@ -18,22 +22,17 @@ class GASMULTIPLAYER_API UBaseAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 protected:
-
-	/** Get Locomotion BlendSpace's reference */
+	
+	/** Get Locomotion BlendSpace */
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
-	UBlendSpace* GetLocomotionBlendSpace() const;
+	UBlendSpace* GetLocomotionBlendSpace(EAnimLocomotionState LocomotionState) const;
 
-	/** Get Idle Animation sequence */
+	/** Get Idle Animation */
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
-	UAnimSequenceBase* GetIdleAnimationAsset() const;
-
-	/** Get Crouch Locomotion BlendSpace's reference */
-	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
-	UBlendSpace* GetCrouchLocomotionBlendSpace() const;
-
-	/** Get Crouch Idle Animation sequence */
-	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
-	UAnimSequenceBase* GetCrouchIdleAnimationAsset() const;
+	UAnimSequenceBase* GetIdleAnimation(EAnimLocomotionState LocomotionState) const;
+	
+	/** Get equipped item's static data */
+	const UItemStaticData* GetEquippedItemStaticData() const;
 
 protected:
 
