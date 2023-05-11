@@ -68,6 +68,9 @@ protected:
 	/** Allow actors to initialize themselves on the C++ side after all of their components have been initialized, only called during gameplay */
 	virtual void PostInitializeComponents() override;
 	
+	/** Do any object-specific cleanup required immediately after loading an object. */
+	virtual void PostLoad() override;
+	
 	/** Called when the game starts */
 	virtual void BeginPlay() override;
 

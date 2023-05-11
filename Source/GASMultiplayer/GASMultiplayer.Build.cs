@@ -17,7 +17,8 @@ public class GASMultiplayer : ModuleRules
 			"EnhancedInput",
 			"PhysicsCore",
 			"MotionWarping",
-			"NetCore"
+			"NetCore",
+			"Niagara"
 		});
 		
 		PublicIncludePaths.Add("GASMultiplayer/");

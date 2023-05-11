@@ -8,6 +8,8 @@
 
 #include "BasePhysicalMaterial.generated.h"
 
+class UNiagaraSystem;
+
 /**
  * 
  */
@@ -21,4 +23,12 @@ public:
 	/** Footstep sound */
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> FootstepSound;
+
+	/** Point impact sound */
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> PointImpactSound;
+
+	/** Point impact VFX */
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> PointImpactVFX;
 };

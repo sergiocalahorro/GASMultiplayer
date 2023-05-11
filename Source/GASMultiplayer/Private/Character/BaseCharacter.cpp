@@ -81,16 +81,22 @@ void ABaseCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	// Set default character data: startup abilities and effects, animation data...
-	if (IsValid(CharacterDataAsset))
-	{
-		SetCharacterData(CharacterDataAsset->CharacterData);
-	}
-
 	// Bind MaxMovementSpeed attribute value change
 	if (AbilitySystemComponent && AttributeSet)
 	{
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &ABaseCharacter::OnMaxMovementSpeedChanged);
+	}
+}
+
+/** Do any object-specific cleanup required immediately after loading an object. */
+void ABaseCharacter::PostLoad()
+{
+	Super::PostLoad();
+	
+	// Set default character data: startup abilities and effects, animation data...
+	if (IsValid(CharacterDataAsset))
+	{
+		SetCharacterData(CharacterDataAsset->CharacterData);
 	}
 }
 
@@ -232,19 +238,19 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		// Equip next item
 		if (EquipNextItemAction)
 		{
-			EnhancedInputComponent->BindAction(EquipNextItemAction, ETriggerEvent::Triggered, this, &ABaseCharacter::EquipNextItem);
+			EnhancedInputComponent->BindAction(EquipNextItemAction, ETriggerEvent::Started, this, &ABaseCharacter::EquipNextItem);
 		}
 
 		// Unequip item
 		if (UnequipItemAction)
 		{
-			EnhancedInputComponent->BindAction(UnequipItemAction, ETriggerEvent::Triggered, this, &ABaseCharacter::UnequipItem);
+			EnhancedInputComponent->BindAction(UnequipItemAction, ETriggerEvent::Started, this, &ABaseCharacter::UnequipItem);
 		}
 
 		// Drop item
 		if (DropItemAction)
 		{
-			EnhancedInputComponent->BindAction(DropItemAction, ETriggerEvent::Triggered, this, &ABaseCharacter::DropItem);
+			EnhancedInputComponent->BindAction(DropItemAction, ETriggerEvent::Started, this, &ABaseCharacter::DropItem);
 		}
 
 		// Drop item

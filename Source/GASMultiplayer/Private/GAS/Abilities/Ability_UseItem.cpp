@@ -54,23 +54,11 @@ const UItemStaticData* UAbility_UseItem::GetEquippedItemStaticData() const
 	return EquippedItemInstance ? EquippedItemInstance->GetItemStaticData() : nullptr;
 }
 
-/** Get equipped weapon's static data */
-const UWeaponStaticData* UAbility_UseItem::GetEquippedWeaponStaticData() const
-{
-	return Cast<UWeaponStaticData>(GetEquippedItemStaticData());
-}
-
 /** Get equipped item Actor */
 AItemActor* UAbility_UseItem::GetEquippedItemActor() const
 {
 	const UInventoryItemInstance* EquippedItemInstance = GetEquippedItemInstance();
 	return EquippedItemInstance ? EquippedItemInstance->GetItemActor() : nullptr;
-}
-
-/** Get equipped weapon item Actor */
-AWeaponItemActor* UAbility_UseItem::GetEquippedWeaponItemActor() const
-{
-	return Cast<AWeaponItemActor>(GetEquippedItemActor());
 }
 
 #pragma endregion ITEM

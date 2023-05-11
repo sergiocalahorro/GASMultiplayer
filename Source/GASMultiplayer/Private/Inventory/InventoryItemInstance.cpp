@@ -66,6 +66,7 @@ void UInventoryItemInstance::OnEquipped(AActor* InOwner)
 	}
 
 	TryGrantAbilities(InOwner);
+	TryApplyEffects(InOwner);
 	bEquipped = true;
 }
 
@@ -79,6 +80,7 @@ void UInventoryItemInstance::OnUnequipped(AActor* InOwner)
 	}
 
 	TryRemoveAbilities(InOwner);
+	TryRemoveEffects(InOwner);
 	bEquipped = false;
 }
 
@@ -91,6 +93,7 @@ void UInventoryItemInstance::OnDropped(AActor* InOwner)
 	}
 
 	TryRemoveAbilities(InOwner);
+	TryRemoveEffects(InOwner);
 	bEquipped = false;
 }
 
@@ -136,6 +139,55 @@ void UInventoryItemInstance::TryRemoveAbilities(AActor* InOwner)
 			
 			GrantedAbilityHandles.Empty();
 		}
+	}
+}
+
+/** Try applying item's effects */
+void UInventoryItemInstance::TryApplyEffects(AActor* InOwner)
+{
+	if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InOwner))
+	{
+		if (const UItemStaticData* ItemStaticData = GetItemStaticData())
+		{
+			const FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+			for (const TSubclassOf<UGameplayEffect>& GameplayEffect : ItemStaticData->OngoingEffects)
+			{
+				if (!GameplayEffect.Get())
+				{
+					continue;
+				}
+
+				FGameplayEffectSpecHandle EffectSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 1.f, EffectContext);
+				if (EffectSpecHandle.IsValid())
+				{
+					const FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+					if (ActiveEffectHandle.WasSuccessfullyApplied())
+					{
+						OngoingEffectsHandles.Add(ActiveEffectHandle);
+					}
+					else
+					{
+						UE_LOG(LogTemp, Error, TEXT("UInventoryItemInstance::TryApplyEffects - Item %s failed to apply runtime effect %s"), *GetName(), *GetNameSafe(GameplayEffect));
+					}
+				}
+			}
+		}
+	}
+}
+
+/** Try removing item's effects */
+void UInventoryItemInstance::TryRemoveEffects(AActor* InOwner)
+{
+	if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InOwner))
+	{
+		for (const FActiveGameplayEffectHandle& ActiveEffectHandle : OngoingEffectsHandles)
+		{
+			if (ActiveEffectHandle.IsValid())
+			{
+				AbilitySystemComponent->RemoveActiveGameplayEffect(ActiveEffectHandle);
+			}
+		}
+		OngoingEffectsHandles.Empty();
 	}
 }
 

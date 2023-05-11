@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // GASMultiplayer
-#include "Ability_UseItem.h"
+#include "Ability_UseWeapon.h"
 
 #include "Ability_SingleShot.generated.h"
 
@@ -18,7 +18,7 @@ class UAbilityTask_WaitGameplayEvent;
  * 
  */
 UCLASS()
-class GASMULTIPLAYER_API UAbility_SingleShot : public UAbility_UseItem
+class GASMULTIPLAYER_API UAbility_SingleShot : public UAbility_UseWeapon
 {
 	GENERATED_BODY()
 

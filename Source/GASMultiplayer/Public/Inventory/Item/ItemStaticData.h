@@ -13,6 +13,7 @@
 
 // Forward declarations - Unreal Engine
 class UGameplayAbility;
+class UGameplayEffect;
 
 // Forward declarations - GASMultiplayer
 class AItemActor;
@@ -40,7 +41,7 @@ public:
 	bool bCanBeEquipped = false;
 
 	/** Component's socket name where the item will be attached */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item", meta = (EditCondition = "bCanBeEquipped", EditConditionHides))
 	FName AttachmentSocketName = NAME_None;
 
 	/** Component's socket name where the item will be attached */
@@ -50,4 +51,8 @@ public:
 	/** Abilities that will be granted by this item */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
 	TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
+
+	/** Effects applied while this item is equipped */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
+	TArray<TSubclassOf<UGameplayEffect>> OngoingEffects;
 };

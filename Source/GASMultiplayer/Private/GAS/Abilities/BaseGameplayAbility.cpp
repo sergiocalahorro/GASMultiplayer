@@ -20,6 +20,11 @@ void UBaseGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	// Apply effects on startup
 	for (const TSubclassOf<UGameplayEffect>& GameplayEffect : EffectsToApplyOnStart)
 	{
+		if (!GameplayEffect.Get())
+		{
+			continue;
+		}
+		
 		const FActiveGameplayEffectHandle ActiveEffectHandle = ApplyActiveGameplayEffect(GameplayEffect, ActorInfo, EffectContext);
 		if (!ActiveEffectHandle.WasSuccessfullyApplied())
 		{
@@ -32,6 +37,11 @@ void UBaseGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		for (const TSubclassOf<UGameplayEffect>& GameplayEffect : EffectsToRemoveOnEnd)
 		{
+			if (!GameplayEffect.Get())
+			{
+				continue;
+			}
+			
 			const FActiveGameplayEffectHandle ActiveEffectHandle = ApplyActiveGameplayEffect(GameplayEffect, ActorInfo, EffectContext);
 			if (ActiveEffectHandle.WasSuccessfullyApplied())
 			{

@@ -76,6 +76,14 @@ protected:
 	/** Try removing item's abilities */
 	UFUNCTION()
 	void TryRemoveAbilities(AActor* InOwner);
+
+	/** Try applying item's effects */
+	UFUNCTION()
+	void TryApplyEffects(AActor* InOwner);
+
+	/** Try removing item's effects */
+	UFUNCTION()
+	void TryRemoveEffects(AActor* InOwner);
 	
 public:
 
@@ -96,6 +104,10 @@ protected:
 	/** Handles for granted abilities */
 	UPROPERTY()
 	TArray<FGameplayAbilitySpecHandle> GrantedAbilityHandles;
+	
+	/** Effects' handles to be removed when the item is unequipped */
+	UPROPERTY()
+	TArray<FActiveGameplayEffectHandle> OngoingEffectsHandles;
 
 #pragma endregion ITEM
 	

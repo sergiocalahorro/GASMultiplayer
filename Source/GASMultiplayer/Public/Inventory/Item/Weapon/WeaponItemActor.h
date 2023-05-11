@@ -39,7 +39,19 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FVector GetMuzzleLocation() const;
 
+	/** Play weapon's effects */
+	UFUNCTION(BlueprintCallable)
+	void PlayWeaponEffects(const FHitResult& InHitResult);
+
 protected:
+
+	/** Play weapon's effects (both in clients and server) */
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayWeaponEffects(const FHitResult& InHitResult);
+	
+	/** Play weapon's effects (internal) */
+	UFUNCTION()
+	void PlayWeaponEffects_Internal(const FHitResult& InHitResult);
 
 	/** Client-side initialization (used for initializing items's visuals) */
 	virtual void Init_Internal() override;

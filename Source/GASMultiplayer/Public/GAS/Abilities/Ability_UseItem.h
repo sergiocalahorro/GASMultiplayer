@@ -14,9 +14,7 @@
 class UInventoryComponent;
 class UInventoryItemInstance;
 class UItemStaticData;
-class UWeaponStaticData;
 class AItemActor;
-class AWeaponItemActor;
 
 /**
  * 
@@ -58,17 +56,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	const UItemStaticData* GetEquippedItemStaticData() const;
 
-	/** Get equipped weapon's static data */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	const UWeaponStaticData* GetEquippedWeaponStaticData() const;
-
 	/** Get equipped item Actor */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	AItemActor* GetEquippedItemActor() const;
-
-	/** Get equipped weapon item Actor */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	AWeaponItemActor* GetEquippedWeaponItemActor() const;
 
 protected:
 

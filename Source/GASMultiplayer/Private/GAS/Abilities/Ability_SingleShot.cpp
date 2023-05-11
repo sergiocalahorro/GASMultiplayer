@@ -77,16 +77,18 @@ void UAbility_SingleShot::Shoot(FGameplayEventData Payload)
 	const FVector TraceStart = GetEquippedWeaponItemActor()->GetMuzzleLocation();
 	const FVector TraceEnd = TraceStart + GetActorInfo().PlayerController->GetControlRotation().Vector() * GetEquippedWeaponStaticData()->ShootingDistance;
 
-	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStart, TraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), false,
+	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStart, TraceEnd, GetEquippedWeaponStaticData()->WeaponTraceChannel, false,
 		IgnoredActors, DebugDrawType, TraceHit, true))
 	{
 		if (UAbilitySystemComponent* ShotActorAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TraceHit.GetActor()))
 		{
-			const UGameplayEffect* DamageEffect = Cast<UGameplayEffect>(GetEquippedWeaponStaticData()->DamageEffect->GetDefaultObject());
-			FGameplayEffectContextHandle DamageEffectContext = ShotActorAbilitySystemComponent->MakeEffectContext();
-			ShotActorAbilitySystemComponent->ApplyGameplayEffectToSelf(DamageEffect, 1.f, DamageEffectContext);
+			const FGameplayEffectContextHandle DamageEffectContext = ShotActorAbilitySystemComponent->MakeEffectContext();
+			const FGameplayEffectSpecHandle SpecHandle = GetWeaponEffectSpec(TraceHit);
+			ShotActorAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
+
+	GetEquippedWeaponItemActor()->PlayWeaponEffects(TraceHit);
 	K2_EndAbility();
 }
 
