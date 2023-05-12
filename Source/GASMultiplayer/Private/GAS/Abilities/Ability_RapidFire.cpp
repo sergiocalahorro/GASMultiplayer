@@ -5,13 +5,8 @@
 // Unreal Engine
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Engine/EngineTypes.h"
-#include "AbilitySystemBlueprintLibrary.h"
-#include "AbilitySystemComponent.h"
 
 // GASMultiplayer
-#include "Character/BaseCharacter.h"
-#include "Inventory/Item/Weapon/WeaponItemActor.h"
 #include "Inventory/Item/Weapon/WeaponStaticData.h"
 
 #pragma region INITIALIZATION
@@ -60,7 +55,7 @@ void UAbility_RapidFire::ActivateAbilityFromEvent_Internal(const FGameplayEventD
 	PlayMontageAndWaitTask->ReadyForActivation();
 
 	FTimerDelegate ShootingTimerDelegate;
-	ShootingTimerDelegate.BindUFunction(this, FName("Shoot"));
+	ShootingTimerDelegate.BindUFunction(this, FName("Shoot"), FGameplayEventData());
 	GetWorld()->GetTimerManager().SetTimer(ShootingTimerHandle, ShootingTimerDelegate, 1.f / GetEquippedWeaponStaticData()->FireRate, true, 0.f);
 
 	WaitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, WaitEventTag, nullptr, true, true);
@@ -69,22 +64,9 @@ void UAbility_RapidFire::ActivateAbilityFromEvent_Internal(const FGameplayEventD
 }
 
 /** Shoot */
-void UAbility_RapidFire::Shoot()
+void UAbility_RapidFire::Shoot(FGameplayEventData Payload)
 {
-	const UWeaponStaticData* WeaponData = GetEquippedWeaponStaticData();
-
-	FHitResult TraceHit;
-	if (GetWeaponToFocusTraceResult(WeaponData->ShootingDistance, WeaponData->WeaponTraceChannel, TraceHit))
-	{
-		if (UAbilitySystemComponent* ShotActorAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TraceHit.GetActor()))
-		{
-			const FGameplayEffectContextHandle DamageEffectContext = ShotActorAbilitySystemComponent->MakeEffectContext();
-			const FGameplayEffectSpecHandle SpecHandle = GetWeaponEffectSpec(TraceHit);
-			ShotActorAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		}
-	}
-
-	GetEquippedWeaponItemActor()->PlayWeaponEffects(TraceHit);
+	Super::Shoot(Payload);
 }
 
 /** Stop shooting */

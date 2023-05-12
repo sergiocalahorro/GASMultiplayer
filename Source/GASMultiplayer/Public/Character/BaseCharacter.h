@@ -280,6 +280,9 @@ private:
 
 	/** Function bound to the delegate that is called whenever the MaxMovementSpeed attribute is changed */
 	void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data);
+
+	/** Function bound to the delegate that is called whenever the Health attribute is changed */
+	void OnHealthChanged(const FOnAttributeChangeData& Data);
 	
 protected:
 
@@ -337,6 +340,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
 	FGameplayTag StopAimEventTag;
 
+	/** Gameplay event tag: Zero health reached */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTag ZeroHealthEventTag;
+	
+	/** Gameplay tag: Ragdoll state */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTag RagdollStateTag;
+
 	/** Tags applied while in air */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
 	FGameplayTagContainer InAirTags;
@@ -352,5 +363,22 @@ protected:
 #pragma endregion GAS_TAGS
 
 #pragma endregion GAS
+
+#pragma region DEATH
+
+public:
+
+	/** Start ragdoll */
+	UFUNCTION()
+	void StartRagdoll();
+
+protected:
+
+	/** Callback called when ragdoll's state tag is changed */
+	UFUNCTION()
+	void OnRagdollStateTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+#pragma endregion DEATH
+	
 };
 

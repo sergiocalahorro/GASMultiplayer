@@ -22,7 +22,7 @@ class GASMULTIPLAYER_API UAnimNotify_GameplayEvent : public UAnimNotify
 public:
 
 	/** Called when AnimNotify is reached */
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
 #pragma endregion OVERRIDES
 

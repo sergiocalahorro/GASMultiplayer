@@ -20,9 +20,9 @@ UAnimNotify_Footstep::UAnimNotify_Footstep(const FObjectInitializer& ObjectIniti
 #pragma endregion INITIALIZATION
 
 /** Called when AnimNotify is reached */
-void UAnimNotify_Footstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UAnimNotify_Footstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	Super::Notify(MeshComp, Animation);
+	Super::Notify(MeshComp, Animation, EventReference);
 	check(MeshComp);
 
 	if (const AActor* Owner = MeshComp->GetOwner())

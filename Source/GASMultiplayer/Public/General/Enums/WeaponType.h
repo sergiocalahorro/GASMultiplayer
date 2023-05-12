@@ -10,6 +10,6 @@
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	Ranged,
-	Melee
+	Trace,
+	Projectile
 };

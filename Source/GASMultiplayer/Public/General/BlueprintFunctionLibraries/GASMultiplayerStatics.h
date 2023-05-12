@@ -8,8 +8,13 @@
 
 #include "GASMultiplayerStatics.generated.h"
 
+// Forward declarations - Unreal Engine
+class UGameplayEffect;
+
 // Forward declarations - GASMultiplayer
 class UItemStaticData;
+class UProjectileStaticData;
+class ABaseProjectile;
 
 /**
  * 
@@ -24,4 +29,12 @@ public:
 	/** Get item static data */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static const UItemStaticData* GetItemStaticData(TSubclassOf<UItemStaticData> ItemDataClass);
+
+	/** Apply radial damage */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
+	static void ApplyRadialDamage(UObject* WorldContextObject, AActor* DamageCauser, FVector Location, float Radius, float DamageAmount, TArray<TSubclassOf<UGameplayEffect>> DamageEffects, const TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes, ETraceTypeQuery TraceType);
+
+	/** Launch projectile */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
+	static ABaseProjectile* LaunchProjectile(UObject* WorldContextObject, TSubclassOf<UProjectileStaticData> ProjectileDataClass, FTransform Transform, AActor* Owner, APawn* Instigator);
 };

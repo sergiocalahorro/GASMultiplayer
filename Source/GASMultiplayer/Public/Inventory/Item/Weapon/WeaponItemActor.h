@@ -41,17 +41,17 @@ public:
 
 	/** Play weapon's effects */
 	UFUNCTION(BlueprintCallable)
-	void PlayWeaponEffects(const FHitResult& InHitResult);
+	void PlayWeaponEffects(const FHitResult& InHitResult, bool bUsePhysicalMaterial = true);
 
 protected:
 
 	/** Play weapon's effects (both in clients and server) */
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastPlayWeaponEffects(const FHitResult& InHitResult);
+	void MulticastPlayWeaponEffects(const FHitResult& InHitResult, bool bUsePhysicalMaterial = true);
 	
 	/** Play weapon's effects (internal) */
 	UFUNCTION()
-	void PlayWeaponEffects_Internal(const FHitResult& InHitResult);
+	void PlayWeaponEffects_Internal(const FHitResult& InHitResult, bool bUsePhysicalMaterial = true);
 
 	/** Client-side initialization (used for initializing items's visuals) */
 	virtual void Init_Internal() override;

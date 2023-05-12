@@ -33,7 +33,7 @@ public:
 public:
 
 	/** Called when AnimNotify is reached */
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
 	/** Get the name for this notify */
 	virtual FString GetNotifyName_Implementation() const override;

@@ -14,6 +14,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "GameplayEffectExtension.h"
 
 // GASMultiplayer
 #include "GAS/Attributes/BaseAttributeSet.h"
@@ -81,10 +82,12 @@ void ABaseCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	// Bind MaxMovementSpeed attribute value change
+	// Bind attributes' value change delegates
 	if (AbilitySystemComponent && AttributeSet)
 	{
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &ABaseCharacter::OnMaxMovementSpeedChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ABaseCharacter::OnHealthChanged);
+		AbilitySystemComponent->RegisterGameplayTagEvent(RagdollStateTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ABaseCharacter::OnRagdollStateTagChanged);
 	}
 }
 
@@ -500,6 +503,57 @@ void ABaseCharacter::OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Dat
 	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }
 
+/** Function bound to the delegate that is called whenever the Health attribute is changed */
+void ABaseCharacter::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+	if (Data.NewValue <= 0.f && Data.OldValue > 0.f)
+	{
+		if (Data.GEModData)
+		{
+			const FGameplayEffectContextHandle& EffectContext = Data.GEModData->EffectSpec.GetEffectContext();
+			if (Cast<ABaseCharacter>(EffectContext.GetInstigator()))
+			{
+				FGameplayEventData EventPayload;
+				EventPayload.EventTag = ZeroHealthEventTag;
+
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, ZeroHealthEventTag, EventPayload);
+			}
+		}
+	}
+}
+
 #pragma endregion GAS_CORE
 
 #pragma endregion GAS
+
+#pragma region DEATH
+
+/** Start ragdoll */
+void ABaseCharacter::StartRagdoll()
+{
+	if (USkeletalMeshComponent* SkeletalMesh = GetMesh())
+	{
+		if (SkeletalMesh->IsSimulatingPhysics())
+		{
+			return;
+		}
+					
+		SkeletalMesh->SetCollisionProfileName(TEXT("Ragdoll"));
+		SkeletalMesh->SetSimulatePhysics(true);
+		SkeletalMesh->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+		SkeletalMesh->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+		SkeletalMesh->WakeAllRigidBodies();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+/** Callback called when ragdoll's state tag is changed */
+void ABaseCharacter::OnRagdollStateTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	if (NewCount > 0)
+	{
+		StartRagdoll();
+	}
+}
+
+#pragma endregion DEATH

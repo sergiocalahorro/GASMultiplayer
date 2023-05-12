@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // GASMultiplayer
-#include "Ability_WeaponAbility.h"
+#include "Ability_ShootTrace.h"
 
 #include "Ability_SingleShot.generated.h"
 
@@ -18,7 +18,7 @@ class UAbilityTask_WaitGameplayEvent;
  * 
  */
 UCLASS()
-class GASMULTIPLAYER_API UAbility_SingleShot : public UAbility_WeaponAbility
+class GASMULTIPLAYER_API UAbility_SingleShot : public UAbility_ShootTrace
 {
 	GENERATED_BODY()
 
@@ -49,8 +49,7 @@ protected:
 	void ActivateAbilityFromEvent_Internal(const FGameplayEventData& EventData, FGameplayTag WaitEventTag);
 
 	/** Shoot */
-	UFUNCTION()
-	void Shoot(FGameplayEventData Payload);
+	virtual void Shoot(FGameplayEventData Payload) override;
 
 private:
 

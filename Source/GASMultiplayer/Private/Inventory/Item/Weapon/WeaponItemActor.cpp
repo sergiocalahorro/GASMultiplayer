@@ -36,34 +36,37 @@ FVector AWeaponItemActor::GetMuzzleLocation() const
 }
 
 /** Play weapon's effects */
-void AWeaponItemActor::PlayWeaponEffects(const FHitResult& InHitResult)
+void AWeaponItemActor::PlayWeaponEffects(const FHitResult& InHitResult, bool bUsePhysicalMaterial)
 {
 	if (HasAuthority())
 	{
-		MulticastPlayWeaponEffects(InHitResult);
+		MulticastPlayWeaponEffects(InHitResult, bUsePhysicalMaterial);
 	}
 	else
 	{
-		PlayWeaponEffects_Internal(InHitResult);
+		PlayWeaponEffects_Internal(InHitResult, bUsePhysicalMaterial);
 	}
 }
 
 /** Play weapon's effects (both in clients and server) */
-void AWeaponItemActor::MulticastPlayWeaponEffects_Implementation(const FHitResult& InHitResult)
+void AWeaponItemActor::MulticastPlayWeaponEffects_Implementation(const FHitResult& InHitResult, bool bUsePhysicalMaterial)
 {
 	if (!Owner || Owner->GetLocalRole() != ROLE_AutonomousProxy)
 	{
-		PlayWeaponEffects_Internal(InHitResult);
+		PlayWeaponEffects_Internal(InHitResult, bUsePhysicalMaterial);
 	}
 }
 	
 /** Play weapon's effects (internal) */
-void AWeaponItemActor::PlayWeaponEffects_Internal(const FHitResult& InHitResult)
+void AWeaponItemActor::PlayWeaponEffects_Internal(const FHitResult& InHitResult, bool bUsePhysicalMaterial)
 {
-	if (UBasePhysicalMaterial* PhysicalMaterial = Cast<UBasePhysicalMaterial>(InHitResult.PhysMaterial.Get()))
+	if (bUsePhysicalMaterial)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, PhysicalMaterial->PointImpactSound, InHitResult.ImpactPoint, 1.f);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PhysicalMaterial->PointImpactVFX, InHitResult.ImpactPoint);
+		if (UBasePhysicalMaterial* PhysicalMaterial = Cast<UBasePhysicalMaterial>(InHitResult.PhysMaterial.Get()))
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, PhysicalMaterial->PointImpactSound, InHitResult.ImpactPoint, 1.f);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PhysicalMaterial->PointImpactVFX, InHitResult.ImpactPoint);
+		}
 	}
 
 	if (const UWeaponStaticData* WeaponStaticData = GetWeaponStaticData())

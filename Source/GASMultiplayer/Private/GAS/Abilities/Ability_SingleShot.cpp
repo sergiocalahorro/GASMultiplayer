@@ -5,12 +5,8 @@
 // Unreal Engine
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Engine/EngineTypes.h"
-#include "AbilitySystemBlueprintLibrary.h"
-#include "AbilitySystemComponent.h"
 
 // GASMultiplayer
-#include "Inventory/Item/Weapon/WeaponItemActor.h"
 #include "Inventory/Item/Weapon/WeaponStaticData.h"
 
 #pragma region INITIALIZATION
@@ -64,20 +60,7 @@ void UAbility_SingleShot::ActivateAbilityFromEvent_Internal(const FGameplayEvent
 /** Shoot */
 void UAbility_SingleShot::Shoot(FGameplayEventData Payload)
 {
-	const UWeaponStaticData* WeaponData = GetEquippedWeaponStaticData();
-
-	FHitResult TraceHit;
-	if (GetWeaponToFocusTraceResult(WeaponData->ShootingDistance, WeaponData->WeaponTraceChannel, TraceHit))
-	{
-		if (UAbilitySystemComponent* ShotActorAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TraceHit.GetActor()))
-		{
-			const FGameplayEffectContextHandle DamageEffectContext = ShotActorAbilitySystemComponent->MakeEffectContext();
-			const FGameplayEffectSpecHandle SpecHandle = GetWeaponEffectSpec(TraceHit);
-			ShotActorAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		}
-	}
-
-	GetEquippedWeaponItemActor()->PlayWeaponEffects(TraceHit);
+	Super::Shoot(Payload);
 	K2_EndAbility();
 }
 

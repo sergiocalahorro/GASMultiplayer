@@ -36,7 +36,7 @@ public:
 
 	/** Get damage effect spec handle */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FGameplayEffectSpecHandle GetWeaponEffectSpec(const FHitResult& InHitResult);
+	FGameplayEffectSpecHandle GetWeaponEffectSpec(const FHitResult& InHitResult) const;
 
 	/** Get hit from weapon's trace to focus */
 	UFUNCTION(BlueprintPure)

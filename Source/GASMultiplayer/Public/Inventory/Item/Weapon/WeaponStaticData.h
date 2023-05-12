@@ -27,7 +27,7 @@ public:
 
 	/** Damage gameplay effect */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon")
-	EWeaponType WeaponType = EWeaponType::Ranged;
+	EWeaponType WeaponType = EWeaponType::Trace;
 	
 	/** Weapon trace channel to apply damage */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon")
@@ -42,12 +42,16 @@ public:
 	float BaseDamage;
 
 	/** Fire rate (amount of shots performed in 1s) */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon", meta = (UIMin = 1.f, ClampMin = 1.f, EditCondition = "WeaponType == EWeaponType::Ranged", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon", meta = (UIMin = 1.f, ClampMin = 1.f, EditCondition = "WeaponType == EWeaponType::Trace", EditConditionHides))
 	float FireRate = 1.f;
 
 	/** Shooting distance */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon", meta = (UIMin = 0.f, ClampMin = 0.f, EditCondition = "WeaponType == EWeaponType::Ranged", EditConditionHides, Units = "cm"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon", meta = (UIMin = 0.f, ClampMin = 0.f, EditCondition = "WeaponType == EWeaponType::Trace", EditConditionHides, Units = "cm"))
 	float ShootingDistance = 10000.f;
+
+	/** Projectile's spawn offset */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon", meta = (UIMin = 0.f, ClampMin = 0.f, EditCondition = "WeaponType == EWeaponType::Projectile", EditConditionHides, Units = "cm"))
+	float SpawnOffset = 150.f;
 
 	/** Asset for this weapon's skeletal mesh */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon")
