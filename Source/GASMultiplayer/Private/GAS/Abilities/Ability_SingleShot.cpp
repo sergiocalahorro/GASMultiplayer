@@ -5,7 +5,6 @@
 // Unreal Engine
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Engine/EngineTypes.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
@@ -65,20 +64,10 @@ void UAbility_SingleShot::ActivateAbilityFromEvent_Internal(const FGameplayEvent
 /** Shoot */
 void UAbility_SingleShot::Shoot(FGameplayEventData Payload)
 {
-	// Debug
-	static const IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("ShowCustomDebug"));
-	const bool bShowDebug = CVar->GetInt() > 0;
-	EDrawDebugTrace::Type DebugDrawType = bShowDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
-
-	TArray<AActor*> IgnoredActors;
-	IgnoredActors.Add(GetActorInfo().OwnerActor.Get());
+	const UWeaponStaticData* WeaponData = GetEquippedWeaponStaticData();
 
 	FHitResult TraceHit;
-	const FVector TraceStart = GetEquippedWeaponItemActor()->GetMuzzleLocation();
-	const FVector TraceEnd = TraceStart + GetActorInfo().PlayerController->GetControlRotation().Vector() * GetEquippedWeaponStaticData()->ShootingDistance;
-
-	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStart, TraceEnd, GetEquippedWeaponStaticData()->WeaponTraceChannel, false,
-		IgnoredActors, DebugDrawType, TraceHit, true))
+	if (GetWeaponToFocusTraceResult(WeaponData->ShootingDistance, WeaponData->WeaponTraceChannel, TraceHit))
 	{
 		if (UAbilitySystemComponent* ShotActorAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TraceHit.GetActor()))
 		{

@@ -5,12 +5,12 @@
 // Unreal Engine
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Engine/EngineTypes.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
 // GASMultiplayer
+#include "Character/BaseCharacter.h"
 #include "Inventory/Item/Weapon/WeaponItemActor.h"
 #include "Inventory/Item/Weapon/WeaponStaticData.h"
 
@@ -40,8 +40,8 @@ void UAbility_RapidFire::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 		WaitGameplayEventTask->EndTask();
 	}
 
+	MontageStop();
 	GetWorld()->GetTimerManager().ClearTimer(ShootingTimerHandle);
-
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -71,20 +71,10 @@ void UAbility_RapidFire::ActivateAbilityFromEvent_Internal(const FGameplayEventD
 /** Shoot */
 void UAbility_RapidFire::Shoot()
 {
-	// Debug
-	static const IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("ShowCustomDebug"));
-	const bool bShowDebug = CVar->GetInt() > 0;
-	EDrawDebugTrace::Type DebugDrawType = bShowDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
-
-	TArray<AActor*> IgnoredActors;
-	IgnoredActors.Add(GetActorInfo().OwnerActor.Get());
+	const UWeaponStaticData* WeaponData = GetEquippedWeaponStaticData();
 
 	FHitResult TraceHit;
-	const FVector TraceStart = GetEquippedWeaponItemActor()->GetMuzzleLocation();
-	const FVector TraceEnd = TraceStart + GetActorInfo().PlayerController->GetControlRotation().Vector() * GetEquippedWeaponStaticData()->ShootingDistance;
-
-	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStart, TraceEnd, GetEquippedWeaponStaticData()->WeaponTraceChannel, false,
-		IgnoredActors, DebugDrawType, TraceHit, true))
+	if (GetWeaponToFocusTraceResult(WeaponData->ShootingDistance, WeaponData->WeaponTraceChannel, TraceHit))
 	{
 		if (UAbilitySystemComponent* ShotActorAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TraceHit.GetActor()))
 		{

@@ -183,6 +183,12 @@ protected:
 	/** Called when attack is stopped */
 	void StopAttack(const FInputActionValue& Value);
 
+	/** Called when aim is started */
+	void StartAim(const FInputActionValue& Value);
+
+	/** Called when aim is stopped */
+	void StopAim(const FInputActionValue& Value);
+
 private:
 	
 	/** MappingContext */
@@ -224,6 +230,10 @@ private:
 	/** Attack Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> AttackAction;
+
+	/** Aim Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> AimAction;
 
 #pragma endregion INPUT
 
@@ -318,6 +328,14 @@ protected:
 	/** Gameplay event tag: StopAttack */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
 	FGameplayTag StopAttackEventTag;
+
+	/** Gameplay event tag: StartAim */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTag StartAimEventTag;
+
+	/** Gameplay event tag: StopAim */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")
+	FGameplayTag StopAimEventTag;
 
 	/** Tags applied while in air */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Tags")

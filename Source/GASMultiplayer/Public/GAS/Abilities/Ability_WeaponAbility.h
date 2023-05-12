@@ -6,9 +6,9 @@
 #include "CoreMinimal.h"
 
 // GASMultiplayer
-#include "Ability_UseItem.h"
+#include "Ability_ItemAbility.h"
 
-#include "Ability_UseWeapon.generated.h"
+#include "Ability_WeaponAbility.generated.h"
 
 // Forward declarations - GASMultiplayer
 class UWeaponStaticData;
@@ -18,7 +18,7 @@ class AWeaponItemActor;
  * 
  */
 UCLASS()
-class GASMULTIPLAYER_API UAbility_UseWeapon : public UAbility_UseItem
+class GASMULTIPLAYER_API UAbility_WeaponAbility : public UAbility_ItemAbility
 {
 	GENERATED_BODY()
 
@@ -37,6 +37,10 @@ public:
 	/** Get damage effect spec handle */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FGameplayEffectSpecHandle GetWeaponEffectSpec(const FHitResult& InHitResult);
+
+	/** Get hit from weapon's trace to focus */
+	UFUNCTION(BlueprintPure)
+	const bool GetWeaponToFocusTraceResult(float TraceDistance, ETraceTypeQuery TraceType, FHitResult& OutHitResult) const;
 
 #pragma endregion WEAPON
 	

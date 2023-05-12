@@ -253,11 +253,18 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			EnhancedInputComponent->BindAction(DropItemAction, ETriggerEvent::Started, this, &ABaseCharacter::DropItem);
 		}
 
-		// Drop item
+		// Attack
 		if (AttackAction)
 		{
 			EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ABaseCharacter::StartAttack);
 			EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopAttack);
+		}
+
+		// Aim
+		if (AimAction)
+		{
+			EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &ABaseCharacter::StartAim);
+			EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopAim);
 		}
 	}
 }
@@ -393,6 +400,24 @@ void ABaseCharacter::StopAttack(const FInputActionValue& Value)
 	EventPayload.EventTag = StopAttackEventTag;
 
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, StopAttackEventTag, EventPayload);
+}
+
+/** Called when aim is started */
+void ABaseCharacter::StartAim(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = StartAimEventTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, StartAimEventTag, EventPayload);
+}
+
+/** Called when aim is stopped */
+void ABaseCharacter::StopAim(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = StopAimEventTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, StopAimEventTag, EventPayload);
 }
 
 #pragma endregion INPUT

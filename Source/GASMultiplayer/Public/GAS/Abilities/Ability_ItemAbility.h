@@ -8,7 +8,7 @@
 // GASMultiplayer
 #include "BaseGameplayAbility.h"
 
-#include "Ability_UseItem.generated.h"
+#include "Ability_ItemAbility.generated.h"
 
 // Forward declarations - GASMultiplayer
 class UInventoryComponent;
@@ -20,7 +20,7 @@ class AItemActor;
  * 
  */
 UCLASS()
-class GASMULTIPLAYER_API UAbility_UseItem : public UBaseGameplayAbility
+class GASMULTIPLAYER_API UAbility_ItemAbility : public UBaseGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -29,7 +29,7 @@ class GASMULTIPLAYER_API UAbility_UseItem : public UBaseGameplayAbility
 public:
 	
 	/** Constructor */
-	UAbility_UseItem();
+	UAbility_ItemAbility();
 
 #pragma endregion INITIALIZATION
 

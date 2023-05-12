@@ -69,7 +69,6 @@ void AWeaponItemActor::PlayWeaponEffects_Internal(const FHitResult& InHitResult)
 	if (const UWeaponStaticData* WeaponStaticData = GetWeaponStaticData())
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, WeaponStaticData->AttackSound, GetActorLocation(), 1.f);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, WeaponStaticData->AttackVFX, GetMuzzleLocation());
 	}
 }
 
