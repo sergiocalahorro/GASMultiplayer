@@ -7,7 +7,7 @@
 #include "Engine/DataAsset.h"
 
 // GASMultiplayer
-#include "General/Structs/CharacterData.h"
+#include "General/Structs/CharacterData/CharacterData.h"
 
 #include "CharacterDataAsset.generated.h"
 

@@ -108,7 +108,7 @@ ABaseProjectile* UGASMultiplayerStatics::LaunchProjectile(UObject* WorldContextO
 {
 	if (UWorld* World = WorldContextObject->GetWorld())
 	{
-		if (!World->IsNetMode(ENetMode::NM_Client))
+		if (!World->IsNetMode(NM_Client))
 		{
 			if (ABaseProjectile* Projectile = World->SpawnActorDeferred<ABaseProjectile>(ABaseProjectile::StaticClass(), Transform, Owner, Instigator, ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{

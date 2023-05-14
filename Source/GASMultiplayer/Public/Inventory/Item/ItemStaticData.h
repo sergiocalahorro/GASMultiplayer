@@ -7,7 +7,7 @@
 #include "UObject/Object.h"
 
 // GASMultiplayer
-#include "General/Structs/CharacterAnimationData.h"
+#include "General/Structs/CharacterData/CharacterAnimationData.h"
 
 #include "ItemStaticData.generated.h"
 

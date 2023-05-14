@@ -12,7 +12,7 @@
 
 // GASMultiplayer
 #include "General/Components/InventoryComponent.h"
-#include "General/Structs/CharacterData.h"
+#include "General/Structs/CharacterData/CharacterData.h"
 #include "Inventory/InventoryItemInstance.h"
 
 #include "BaseCharacter.generated.h"
