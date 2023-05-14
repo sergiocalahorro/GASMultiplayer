@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "General/Components/FootstepsComponent.h"
+#include "General/Components/Movement/FootstepsComponent.h"
 
 // Unreal Engine
 #include "GameFramework/Character.h"

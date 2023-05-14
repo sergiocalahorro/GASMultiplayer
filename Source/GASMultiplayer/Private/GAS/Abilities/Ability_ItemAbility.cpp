@@ -3,7 +3,7 @@
 #include "GAS/Abilities/Ability_ItemAbility.h"
 
 // GASMultiplayer
-#include "General/Components/InventoryComponent.h"
+#include "General/Components/Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemInstance.h"
 #include "Inventory/Item/ItemStaticData.h"
 #include "Inventory/Item/ItemActor.h"

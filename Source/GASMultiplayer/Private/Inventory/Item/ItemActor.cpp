@@ -10,7 +10,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 
 // GASMultiplayer
-#include "General/Components/InventoryComponent.h"
+#include "General/Components/Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemInstance.h"
 #include "Inventory/Item/ItemStaticData.h"
 
@@ -49,7 +49,7 @@ void AItemActor::BeginPlay()
 		if (!IsValid(ItemInstance) && IsValid(ItemStaticDataClass))
 		{
 			ItemInstance = NewObject<UInventoryItemInstance>();
-			ItemInstance->Init(ItemStaticDataClass);
+			ItemInstance->Init(ItemStaticDataClass, Quantity);
 			
 			SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 			SphereComponent->SetGenerateOverlapEvents(true);
@@ -80,6 +80,7 @@ void AItemActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 
 	DOREPLIFETIME(AItemActor, ItemInstance);
 	DOREPLIFETIME(AItemActor, ItemState);
+	DOREPLIFETIME(AItemActor, Quantity);
 }
 
 #pragma endregion OVERRIDES
@@ -154,12 +155,6 @@ void AItemActor::OnDropped()
 		SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		SphereComponent->SetGenerateOverlapEvents(true);
 	}
-}
-
-/** Client-side initialization (used for initializing items's visuals) */
-void AItemActor::Init_Internal()
-{
-	
 }
 
 /** Functionality performed when some Actor enters Item's sphere */

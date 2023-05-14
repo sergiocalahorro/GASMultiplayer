@@ -15,6 +15,7 @@
 UAbility_SingleShot::UAbility_SingleShot()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	bRetriggerInstancedAbility = true;
 	bServerRespectsRemoteAbilityCancellation = false;
 }
 
@@ -45,6 +46,11 @@ void UAbility_SingleShot::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 /** Activate ability from event (must be called from Blueprint-side) */
 void UAbility_SingleShot::ActivateAbilityFromEvent_Internal(const FGameplayEventData& EventData, FGameplayTag WaitEventTag)
 {
+	if (!K2_CommitAbility())
+	{
+		K2_EndAbility();
+	}
+	
 	PlayMontageAndWaitTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, GetEquippedWeaponStaticData()->AttackMontage); 
 	PlayMontageAndWaitTask->OnCompleted.AddDynamic(this, &UAbility_SingleShot::K2_EndAbility);
 	PlayMontageAndWaitTask->OnBlendOut.AddDynamic(this, &UAbility_SingleShot::K2_EndAbility);

@@ -30,6 +30,7 @@ void UAbility_ShootTrace::Shoot(FGameplayEventData Payload)
 	}
 
 	GetEquippedWeaponItemActor()->PlayWeaponEffects(TraceHit);
+	DecreaseAmmo();
 }
 
 #pragma endregion SHOOT

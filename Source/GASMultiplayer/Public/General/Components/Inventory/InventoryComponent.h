@@ -8,7 +8,8 @@
 #include "Abilities/GameplayAbilityTypes.h"
 
 // GASMultiplayer
-#include "Inventory/InventoryList.h"
+#include "General/Structs/Inventory/InventoryList.h"
+#include "General/Structs/Utils/FastArrayTagCounter.h"
 
 #include "InventoryComponent.generated.h"
 
@@ -69,6 +70,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveItemInstance(UInventoryItemInstance* InItemInstance);
 
+	/** Remove item from inventory by given tag */
+	UFUNCTION(BlueprintCallable)
+	void RemoveItemWithInventoryTag(FGameplayTag Tag, int32 Count = 1);
+
+	/** Get number of items in inventory with given tag */
+	UFUNCTION(BlueprintCallable)
+	int32 GetInventoryTagCount(FGameplayTag Tag) const;
+
+	/** Add number of items in inventory by given tag */
+	UFUNCTION(BlueprintCallable)
+	void AddInventoryTagCount(FGameplayTag Tag, int32 CountDelta);
+
+	/** Get list of item instances with given tag */
+	UFUNCTION(BlueprintCallable)
+	TArray<UInventoryItemInstance*> GetAllInstancesWithTag(FGameplayTag Tag);
+	
 	/** Equip item */
 	UFUNCTION(BlueprintCallable)
 	void EquipItem(TSubclassOf<UItemStaticData> ItemStaticDataClass);
@@ -128,6 +145,10 @@ protected:
 	/** Inventory list */
 	UPROPERTY(Replicated)
 	FInventoryList InventoryList;
+
+	/** Inventory tags */
+	UPROPERTY(Replicated)
+	FFastArrayTagCounter InventoryTags;
 
 	/** Default items */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Inventory")

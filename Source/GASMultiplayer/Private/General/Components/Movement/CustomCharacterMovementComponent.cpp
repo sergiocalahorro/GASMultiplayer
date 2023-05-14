@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "General/Components/CustomCharacterMovementComponent.h"
+#include "General/Components/Movement/CustomCharacterMovementComponent.h"
 
 // Unreal Engine
 #include "AbilitySystemBlueprintLibrary.h"

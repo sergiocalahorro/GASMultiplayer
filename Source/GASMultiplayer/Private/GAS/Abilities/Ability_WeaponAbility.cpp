@@ -9,8 +9,25 @@
 
 // GASMultiplayer
 #include "Character/BaseCharacter.h"
+#include "General/Components/Inventory/InventoryComponent.h"
 #include "Inventory/Item/Weapon/WeaponItemActor.h"
 #include "Inventory/Item/Weapon/WeaponStaticData.h"
+
+#pragma region ABILITY
+
+/** Returns true if this ability can be activated right now. Has no side effects */
+bool UAbility_WeaponAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	return HasEnoughAmmo();
+}
+
+/** Commits resources/cooldowns etc. */
+bool UAbility_WeaponAbility::CommitAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, OUT FGameplayTagContainer* OptionalRelevantTags)
+{
+	return Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags) && HasEnoughAmmo();
+}
+
+#pragma endregion ABILITY
 
 #pragma region WEAPON
 
@@ -71,6 +88,32 @@ const bool UAbility_WeaponAbility::GetWeaponToFocusTraceResult(float TraceDistan
 	}
 
 	return false;
+}
+
+/** Check whether owner of the ability has enough ammo to perform ability */
+bool UAbility_WeaponAbility::HasEnoughAmmo() const
+{
+	if (const UWeaponStaticData* WeaponData = GetEquippedWeaponStaticData())
+	{
+		if (WeaponData->AmmoTag.IsValid())
+		{
+			return InventoryComponent->GetInventoryTagCount(WeaponData->AmmoTag) > 0;
+		}
+	}
+
+	return false;
+}
+
+/** Decrease ammo after using weapon */
+void UAbility_WeaponAbility::DecreaseAmmo()
+{
+	if (const UWeaponStaticData* WeaponData = GetEquippedWeaponStaticData())
+	{
+		if (WeaponData->AmmoTag.IsValid())
+		{
+			InventoryComponent->RemoveItemWithInventoryTag(WeaponData->AmmoTag, 1);
+		}
+	}
 }
 
 #pragma endregion WEAPON

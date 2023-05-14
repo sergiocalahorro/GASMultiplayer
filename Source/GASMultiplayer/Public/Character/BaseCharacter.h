@@ -11,7 +11,7 @@
 #include "GameplayEffectTypes.h"
 
 // GASMultiplayer
-#include "General/Components/InventoryComponent.h"
+#include "General/Components/Inventory/InventoryComponent.h"
 #include "General/Structs/CharacterData/CharacterData.h"
 #include "Inventory/InventoryItemInstance.h"
 

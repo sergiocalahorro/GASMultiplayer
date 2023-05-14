@@ -45,8 +45,7 @@ protected:
 protected:
 
 	/** Activate ability from event (must be called from Blueprint-side) */
-	UFUNCTION(BlueprintCallable)
-	void ActivateAbilityFromEvent_Internal(const FGameplayEventData& EventData, FGameplayTag WaitEventTag);
+	virtual void ActivateAbilityFromEvent_Internal(const FGameplayEventData& EventData, FGameplayTag WaitEventTag) override;
 
 	/** Shoot */
 	virtual void Shoot(FGameplayEventData Payload) override;

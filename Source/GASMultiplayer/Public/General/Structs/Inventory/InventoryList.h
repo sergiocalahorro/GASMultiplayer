@@ -6,7 +6,8 @@
 #include "CoreMinimal.h"
 
 // GASMultiplayer
-#include "Inventory/InventoryListItem.h"
+#include "GameplayTagContainer.h"
+#include "General/Structs/Inventory/InventoryListItem.h"
 
 #include "InventoryList.generated.h"
 
@@ -37,6 +38,12 @@ public:
 	/** Getter of Items reference */
 	TArray<FInventoryListItem>& GetItemsRef() { return Items; }
 
+	/** Get all item instances with given tag */
+	TArray<UInventoryItemInstance*> GetAllInstancesWithTag(FGameplayTag InTag);
+
+	/** Get all available item instances of given class */
+	TArray<UInventoryItemInstance*> GetAllAvailableInstancesOfClass(TSubclassOf<UItemStaticData> InItemStaticDataClass);
+
 protected:
 
 	/** Item list */
@@ -47,5 +54,5 @@ protected:
 template<>
 struct TStructOpsTypeTraits<FInventoryList> : public TStructOpsTypeTraitsBase2<FInventoryList>
 {
-	enum {WithNetDeltaSerializer = true};
+	enum { WithNetDeltaSerializer = true };
 };

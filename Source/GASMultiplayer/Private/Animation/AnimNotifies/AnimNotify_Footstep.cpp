@@ -3,7 +3,7 @@
 #include "Animation/AnimNotifies/AnimNotify_Footstep.h"
 
 // GASMultiplayer
-#include "General/Components/FootstepsComponent.h"
+#include "General/Components/Movement/FootstepsComponent.h"
 
 #pragma region INITIALIZATION
 

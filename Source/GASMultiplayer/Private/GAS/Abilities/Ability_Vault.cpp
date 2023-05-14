@@ -11,7 +11,7 @@
 
 // GASMultiplayer
 #include "Character/BaseCharacter.h"
-#include "General/Components/CustomMotionWarpingComponent.h"
+#include "General/Components/Movement/CustomMotionWarpingComponent.h"
 
 #pragma region INITIALIZATION
 

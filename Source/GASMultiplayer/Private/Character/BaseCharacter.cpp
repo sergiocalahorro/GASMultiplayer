@@ -19,10 +19,10 @@
 // GASMultiplayer
 #include "GAS/Attributes/BaseAttributeSet.h"
 #include "GAS/AbilitySystem/BaseAbilitySystemComponent.h"
-#include "General/Components/CustomCharacterMovementComponent.h"
-#include "General/Components/FootstepsComponent.h"
-#include "General/Components/CustomMotionWarpingComponent.h"
-#include "General/Components/InventoryComponent.h"
+#include "General/Components/Movement/CustomCharacterMovementComponent.h"
+#include "General/Components/Movement/FootstepsComponent.h"
+#include "General/Components/Movement/CustomMotionWarpingComponent.h"
+#include "General/Components/Inventory/InventoryComponent.h"
 #include "General/DataAssets/CharacterDataAsset.h"
 
 #pragma region INITIALIZATION

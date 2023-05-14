@@ -47,6 +47,11 @@ void UAbility_RapidFire::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 /** Activate ability from event (must be called from Blueprint-side) */
 void UAbility_RapidFire::ActivateAbilityFromEvent_Internal(const FGameplayEventData& EventData, FGameplayTag WaitEventTag)
 {
+	if (!K2_CommitAbility())
+	{
+		K2_EndAbility();
+	}
+	
 	PlayMontageAndWaitTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, GetEquippedWeaponStaticData()->AttackMontage); 
 	PlayMontageAndWaitTask->OnCompleted.AddDynamic(this, &UAbility_RapidFire::K2_EndAbility);
 	PlayMontageAndWaitTask->OnBlendOut.AddDynamic(this, &UAbility_RapidFire::K2_EndAbility);
@@ -66,7 +71,14 @@ void UAbility_RapidFire::ActivateAbilityFromEvent_Internal(const FGameplayEventD
 /** Shoot */
 void UAbility_RapidFire::Shoot(FGameplayEventData Payload)
 {
-	Super::Shoot(Payload);
+	if (K2_CommitAbility())
+	{
+		Super::Shoot(Payload);
+	}
+	else
+	{
+		K2_EndAbility();
+	}
 }
 
 /** Stop shooting */

@@ -91,7 +91,7 @@ protected:
 
 	/** Client-side initialization (used for initializing items's visuals) */
 	UFUNCTION()
-	virtual void Init_Internal();
+	virtual void Init_Internal() PURE_VIRTUAL(AItemActor::Init_Internal); 
 
 	/** Functionality performed when some Actor enters Item's sphere */
 	UFUNCTION()
@@ -118,6 +118,10 @@ protected:
 	/** Item state */
 	UPROPERTY(ReplicatedUsing = OnRep_ItemState)
 	EItemState ItemState = EItemState::None;
+
+	/** Quantity of items given by this item actor */
+	UPROPERTY(EditAnywhere, Replicated, Category = "AA|Item")
+	int32 Quantity = 1;
 	
 #pragma endregion ITEM
 

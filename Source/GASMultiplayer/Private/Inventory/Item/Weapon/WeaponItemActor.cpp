@@ -16,7 +16,7 @@
 /** Sets default values for this actor's properties */
 AWeaponItemActor::AWeaponItemActor()
 {
-
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 #pragma endregion INITIALIZATION
@@ -78,8 +78,6 @@ void AWeaponItemActor::PlayWeaponEffects_Internal(const FHitResult& InHitResult,
 /** Client-side initialization (used for initializing items's visuals) */
 void AWeaponItemActor::Init_Internal()
 {
-	Super::Init_Internal();
-
 	if (const UWeaponStaticData* WeaponStaticData = GetWeaponStaticData())
 	{
 		if (WeaponStaticData->SkeletalMesh)

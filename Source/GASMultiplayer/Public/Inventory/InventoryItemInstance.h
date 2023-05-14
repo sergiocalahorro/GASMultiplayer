@@ -12,6 +12,7 @@
 // Forward declarations - GASMultiplayer
 class UItemStaticData;
 class AItemActor;
+class UInventoryComponent;
 
 /**
  * 
@@ -41,7 +42,7 @@ public:
 
 	/** Initialize item instance */
 	UFUNCTION()
-	virtual void Init(TSubclassOf<UItemStaticData> InItemStaticDataClass);
+	virtual void Init(TSubclassOf<UItemStaticData> InItemStaticDataClass, int32 InQuantity = 1);
 
 	/** Functionality performed when the item is equipped */
 	UFUNCTION()
@@ -62,6 +63,14 @@ public:
 	/** Get ItemActor */
 	UFUNCTION()
 	AItemActor* GetItemActor() const;
+	
+	/** Getter of Quantity */
+	UFUNCTION()
+	int32 GetQuantity() const { return Quantity; }
+
+	/** Add given amount of items */
+	UFUNCTION()
+	void AddItems(int32 Count);
 
 protected:
 	
@@ -100,6 +109,10 @@ protected:
 	/** Item Actor's reference */
 	UPROPERTY(Replicated)
 	TObjectPtr<AItemActor> ItemActor;
+
+	/** Item's quantity in inventory */
+	UPROPERTY(Replicated)
+	int32 Quantity = 1;
 
 	/** Handles for granted abilities */
 	UPROPERTY()

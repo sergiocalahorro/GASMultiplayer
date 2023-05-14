@@ -20,6 +20,10 @@ class GASMULTIPLAYER_API UAbility_ShootTrace : public UAbility_WeaponAbility
 
 protected:
 
+	/** Activate ability from event (must be called from Blueprint-side) */
+	UFUNCTION(BlueprintCallable)
+	virtual void ActivateAbilityFromEvent_Internal(const FGameplayEventData& EventData, FGameplayTag WaitEventTag) PURE_VIRTUAL(UAbility_WeaponAbility::ActivateAbilityFromEvent_Internal);
+
 	/** Shoot */
 	UFUNCTION()
 	virtual void Shoot(FGameplayEventData Payload);

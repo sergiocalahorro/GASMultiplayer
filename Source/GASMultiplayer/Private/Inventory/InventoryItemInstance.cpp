@@ -29,6 +29,7 @@ void UInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UInventoryItemInstance, bEquipped);
 	DOREPLIFETIME(UInventoryItemInstance, ItemStaticDataClass);
 	DOREPLIFETIME(UInventoryItemInstance, ItemActor);
+	DOREPLIFETIME(UInventoryItemInstance, Quantity);
 }
 
 #pragma endregion OVERRIDES
@@ -36,9 +37,10 @@ void UInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 #pragma region ITEM
 
 /** Initialize item instance */
-void UInventoryItemInstance::Init(TSubclassOf<UItemStaticData> InItemStaticDataClass)
+void UInventoryItemInstance::Init(TSubclassOf<UItemStaticData> InItemStaticDataClass, int32 InQuantity)
 {
 	ItemStaticDataClass = InItemStaticDataClass;
+	Quantity = InQuantity;
 }
 
 /** Functionality performed when the item is equipped */
@@ -188,6 +190,17 @@ void UInventoryItemInstance::TryRemoveEffects(AActor* InOwner)
 			}
 		}
 		OngoingEffectsHandles.Empty();
+	}
+}
+
+/** Add given amount of items */
+void UInventoryItemInstance::AddItems(int32 Count)
+{
+	Quantity += Count;
+
+	if (Quantity < 0)
+	{
+		Quantity = 0;
 	}
 }
 

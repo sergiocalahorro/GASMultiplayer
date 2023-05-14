@@ -5,6 +5,7 @@
 // Unreal Engine
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "GameplayTagContainer.h"
 
 // GASMultiplayer
 #include "General/Structs/CharacterData/CharacterAnimationData.h"
@@ -55,4 +56,13 @@ public:
 	/** Effects applied while this item is equipped */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
 	TArray<TSubclassOf<UGameplayEffect>> OngoingEffects;
+
+	/** Tags applied to the inventory when the item is added */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
+	TArray<FGameplayTag> InventoryTags;
+
+	/** Max number of items inside an item instance */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item")
+	int32 MaxStackCount = 1;
+	
 };

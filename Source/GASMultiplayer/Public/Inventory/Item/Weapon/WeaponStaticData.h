@@ -72,4 +72,8 @@ public:
 	/** Weapon's attack VFX */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon")
 	TObjectPtr<UNiagaraSystem> AttackVFX;
+
+	/** Weapon's ammo tag */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Item|Weapon")
+	FGameplayTag AmmoTag;
 };
